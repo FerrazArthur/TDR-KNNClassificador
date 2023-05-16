@@ -4,7 +4,6 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import re
-from minkowski import *
 
 
 def p_root(value, root):

@@ -5,7 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import re
 
-
 def p_root(value, root):
     root_value = 1 / float(root)
     return round(Decimal(value) ** Decimal(root_value), 3)

@@ -24,7 +24,7 @@ def treinoRegular(rawAmostras, test_size=0.97, random_state = 1):
     #o de teste e o de treino.
     return train_test_split(amostras,nomes, test_size=test_size, random_state = random_state)
 
-def treinoMedia(rawAmostras, corte=25, embaralhar=True):
+def treinoMedia(rawAmostras, corte=67, embaralhar=True):
     """
         Retorna um conjunto de treino que contém apenas um exemplo por classe e esse é uma média dos primeiros 'corte' elementos de cada classe.
         Retorna o restante como conjunto de testes
@@ -48,11 +48,18 @@ def treinoMedia(rawAmostras, corte=25, embaralhar=True):
     #Conjunto de testes composto pelo restante
     newAmostras = []
     newNomes = []
+    #para cada classe
     for i in range(np.size(rawAmostras, 0)):
-        for j in range(corte, np.size(rawAmostras[i], 0)):
-            newAmostras.append(rawAmostras[i][j])
+        #embaralha ou não o conjunto de amostrs de teste, antes de colocar os labels
+        if embaralhar == True:
+            amostrasClasse = shuffle(rawAmostras[i][corte:])
+        else:
+            amostrasClasse = rawAmostras[i][corte:]
+        #pega cada amostra fora do corte e guarda num vetor newAmostra, com sua classe salva como um label no vetor newNomes
+        for classe in amostrasClasse:
+            newAmostras.append(classe)
             newNomes.append(i)
-    #x, X_test, y, y_test = train_test_split(newAmostras, newNomes, test_size=0.999, random_state = 1)
+    #embaralha os labels (e as amostras associadas, junto) pra que não estejam em sequência mas mantenham sua relação() tipo y_test[i] <é a classe de>-> x_test[i], para todo i válido)
     X_test, y_test = shuffle(newAmostras, newNomes)
 
     return X_train, X_test, y_train, y_test 
@@ -103,6 +110,6 @@ def testarKnn(path,dividirAmostra, k=1):
     result2 = accuracy_score(y_test,ypred)
     print("Accuracy:",result2)
 
-testarKnn('dados',treinoRegular)
+#testarKnn('dados',treinoRegular)
 testarKnn('dados',treinoMedia)
 

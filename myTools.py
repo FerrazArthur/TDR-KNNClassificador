@@ -28,6 +28,29 @@ def loadCSVMatrix(nomeArquivo):
     tabela=np.asarray(tabela, dtype=float)
     return tabela
 
+def writeCSV(x, y, nomeArquivo):
+    '''
+    Input: conjunto de amostras, label das amostras, nome do arquivo csv
+    output: True se ocorreu algum erro, False do contrário
+    '''
+    try:
+        with open(nomeArquivo, "w",) as arquivo:
+            #escreve cabeçalho CLASSE, VALORES
+            arquivo.write("CLASSE, ")
+            #escreve valor pra cada dimensão 
+            for i in range(np.size(x[0], 0)):
+                arquivo.write("VALOR,")
+            arquivo.write('\n')
+            for i in range(np.size(x, 0)):
+                arquivo.write(str(y[i]))
+                for j in range(np.size(x[i], 0)):
+                    arquivo.write(','+str(x[i][j]))
+                arquivo.write('\n')
+        return False
+    except Exception as e:
+        print('Erro ao escrever em arquivo "'+nomeArquivo+'": '+str(e))
+        return True
+
 def getAmostra(path):
     '''
     recebe uma string caminho para onde estão os arquivos csv

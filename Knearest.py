@@ -89,6 +89,8 @@ def testarKnn(path,dividirAmostra, k=1):
     knn_class = KNeighborsClassifier(n_neighbors=1)
 
     X_train, X_test, y_train, y_test = dividirAmostra(rawAmostras)
+    writeCSV(X_train, y_train, "xyTrain.csv")
+    return
     #treinando o classificador
     knn_class.fit(X_train, y_train)
     print("tamanho da amostra no treino: ", len(X_train))

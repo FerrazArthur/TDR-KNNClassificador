@@ -1,68 +1,6 @@
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
-from sklearn.utils import shuffle
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, ConfusionMatrixDisplay
 from myTools import *
-
-def treinoRegular(rawAmostras, test_size=0.97, random_state = 1):
-    """
-        Retorna o output método scipy regular de dividir as amostras em treino e teste.
-    """
-    #amostras é o vetor 2dim que concatena todas as amostras, eliminando a dimensão 
-    #que separa os dados por arquivo
-    #nomes é o vetor que classifica cada elemento de amostras com sua respectiva classe
-    #utilizando indices entre 0 e 8
-    #concatenando os valores de rawAmostras para um formato 2dim
-    amostras = []
-    nomes = []
-    for i in range(np.size(rawAmostras, 0)):
-        for sinal in rawAmostras[i]:
-            amostras.append(sinal)
-            nomes.append(i)
-
-    #aqui o algoritmo train_test_split randomiza e distribui a amostra entre dois conjuntos
-    #o de teste e o de treino.
-    return train_test_split(amostras,nomes, test_size=test_size, random_state = random_state)
-
-def treinoMedia(rawAmostras, corte=67, embaralhar=True):
-    """
-        Retorna um conjunto de treino que contém apenas um exemplo por classe e esse é uma média dos primeiros 'corte' elementos de cada classe.
-        Retorna o restante como conjunto de testes
-    """
-    #Calculando o conjunto de treino
-    newRawAmostras = []
-    for i in range(np.size(rawAmostras, 0)):
-        #utilizando poucos elementos da classe para tirar a média
-        if embaralhar == True:
-            newRawAmostras.append(shuffle(rawAmostras[i])[:corte])
-        else:
-            newRawAmostras.append(rawAmostras[i][:corte])
-    medias = calcularMedias(newRawAmostras)
-    X_train = []
-    y_train = []
-    for i in range(np.size(medias, 0)):
-        X_train.append(medias[i])
-        y_train.append(i)
-
-
-    #Conjunto de testes composto pelo restante
-    newAmostras = []
-    newNomes = []
-    #para cada classe
-    for i in range(np.size(rawAmostras, 0)):
-        #embaralha ou não o conjunto de amostrs de teste, antes de colocar os labels
-        if embaralhar == True:
-            amostrasClasse = shuffle(rawAmostras[i][corte:])
-        else:
-            amostrasClasse = rawAmostras[i][corte:]
-        #pega cada amostra fora do corte e guarda num vetor newAmostra, com sua classe salva como um label no vetor newNomes
-        for classe in amostrasClasse:
-            newAmostras.append(classe)
-            newNomes.append(i)
-    #embaralha os labels (e as amostras associadas, junto) pra que não estejam em sequência mas mantenham sua relação() tipo y_test[i] <é a classe de>-> x_test[i], para todo i válido)
-    X_test, y_test = shuffle(newAmostras, newNomes)
-
-    return X_train, X_test, y_train, y_test 
 
 def testarKnn(path,dividirAmostra, k=1):
     """
@@ -81,8 +19,7 @@ def testarKnn(path,dividirAmostra, k=1):
     #mostrarVariancia(rawAmostras) #calcula e plota variância dos dados
     #sei que há um valor errado na amostra 325 da classe 5, cujo desvio é de 41. então o "removerei"
     rawAmostras[5][325] = rawAmostras[5][324]
-
-
+    mostrarVariancia(rawAmostras)
     #-----------------------------
     #Conjunto de treino composto por apenas um exemplo para cada classe, onde esse exemplo é uma média do conjunto inteiro
 
@@ -90,7 +27,6 @@ def testarKnn(path,dividirAmostra, k=1):
 
     X_train, X_test, y_train, y_test = dividirAmostra(rawAmostras)
     writeCSV(X_train, y_train, "xyTrain.csv")
-    return
     #treinando o classificador
     knn_class.fit(X_train, y_train)
     print("tamanho da amostra no treino: ", len(X_train))
@@ -101,16 +37,23 @@ def testarKnn(path,dividirAmostra, k=1):
     result = confusion_matrix(y_test, ypred)
     
     #imprimindo o resultado
+
+    fig, ax = plt.subplots(2, 1)
+
     print("legenda: ")
     for i in range(len(arquivos)):
         print(i, ": ",arquivos[i])
-    print("Confusion Matrix:")
-    print(result)
-    result1 = classification_report(y_test, ypred)
-    print("Classification Report:")
-    print(result1)
+    #print("Confusion Matrix:")
+    #print(result)
+    cmd = ConfusionMatrixDisplay(confusion_matrix=result)
+    cmd.plot(values_format="d", ax=ax[0])
+    result1 = classification_report(y_test, ypred, output_dict=True)
+    sns.heatmap(pd.DataFrame(result1).iloc[:-1, :].T, annot=True, ax=ax[1])
+    plt.show()
+    #print("Classification Report:")
+    
     result2 = accuracy_score(y_test,ypred)
-    print("Accuracy:",result2)
+    #print("Accuracy:",result2)
 
 #testarKnn('dados',treinoRegular)
 testarKnn('dados',treinoMedia)

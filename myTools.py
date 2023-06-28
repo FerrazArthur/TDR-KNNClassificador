@@ -2,7 +2,11 @@ from math import *
 from decimal import Decimal
 from pathlib import Path
 import numpy as np
+from sklearn.utils import shuffle
+from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 import re
 
 def p_root(value, root):
@@ -53,10 +57,12 @@ def writeCSV(x, y, nomeArquivo):
 
 def getAmostra(path):
     '''
-    recebe uma string caminho para onde estão os arquivos csv
-    e retorna um vetor numpy, onde cada elemento é um arquivo diferente
+    Input: Recebe uma string caminho para onde estão os arquivos csv
+
+    Output:amostras, um vetor de dim 3, onde dim 1 é cada arquivo csv, 
+    dim 2 contém as amostras desse arquivo e dim 3 são os valores dos sinais
+    e classes é um vetor com o nome de cada arquivo na ordem.
     '''
-    #dados = Path(path).glob('*(.csv|.CSV)')
     dados = sorted(Path(path).glob('*'))
     amostras = []
     classes = []
@@ -69,20 +75,6 @@ def getAmostra(path):
         classes[-1] = re.split(r'^[0-9]+-', classes[-1])[1]
 
     return np.array(amostras), np.array(classes)
-#def getAmostra(path):
-#    '''
-#    recebe uma string caminho para onde estão os arquivos csv
-#    e retorna um vetor numpy, onde cada elemento é um arquivo diferente
-#    '''
-#    #dados = Path(path).glob('*(.csv|.CSV)')
-#    dados = Path(path).glob('*')
-#    amostras = []
-#    classes = []
-#    for csv in dados:
-#        amostras.append(loadCSVMatrix(csv))
-#        classes.append(str(csv).strip(path+'/').strip('.CSV').strip('.csv'))
-#
-#    return np.array(amostras), np.array(classes)
 
 def calcularMedias(amostras):
     '''
@@ -104,7 +96,7 @@ def calcularMedias(amostras):
 def calcularDist(amostras, medias):
     '''
     Recebe um vetor numpy amostras onde cada elemento é uma coleção de exemplos de um mesmo sinal
-    e um vetor numpy medias, que armazena as médias para cada classe e retorna um vetor numpy
+    e um vetor numpy medias, que armazena a média para cada classe e retorna um vetor numpy
     contendo a distância entre cada sinal em amostras e a media da sua classe
     '''
     distancias = []
@@ -164,7 +156,7 @@ def PlotaMaiorDesvio(amostras, distancias, medias):
 
     maiorDesvio = 0, 0, 0#classe, amostra na classe, valor
     for i in range(np.size(amostras, 0)):
-        print("Classe", i,'possui distancia relativa de:', distancias[i][MaiorIndex[i]])
+        print('A maior distancia relativa à media na Classe', i, ' é', distancias[i][MaiorIndex[i]])
         if distancias[i][MaiorIndex[i]] > maiorDesvio[2]:
             maiorDesvio = i, MaiorIndex[i], distancias[i][MaiorIndex[i]]
     print('A maior variação encontrada foi na amostra', maiorDesvio[1], 'da classe', maiorDesvio[0], ', cuja variância encontrada foi de', maiorDesvio[2])
@@ -184,9 +176,93 @@ def plot2Signal(signal1, nome1, signal2, nome2):
     fig.tight_layout()
     plt.show()
 
+def PlotaDesvioPadrao(amostras, dist, medias):
+    #para calcular o desvio padrao por classe:
+    #calcula média das distancias à media na classe
+    distMedia = []
+    for i in range(np.size(amostras, 0)):#para cada classe
+        distMedia.append(0)
+        for j in range(np.size(amostras[i], 0)):
+            distMedia[-1] += dist[i][j]
+        distMedia[-1] /= np.size(dist[i], 0)
+    
+    desvioPadrao = []
+    for i in range(np.size(amostras, 0)):#para cada classe
+        desvioPadrao.append(0)
+        for j in range(np.size(amostras[i], 0)):
+            desvioPadrao[-1] += pow(distMedia[i] - dist[i][j], 2)
+        desvioPadrao[-1] /= np.size(dist[i], 0)
+        desvioPadrao[-1] = sqrt(desvioPadrao[-1])
+    
+    for i in range(np.size(amostras, 0)):#para cada classe
+        print("Desvio padrao da classe ", i, " é igual a ", desvioPadrao[i])
+
 def mostrarVariancia(amostras):
     #amostras, arquivos = getAmostra(path)
 
     medias = calcularMedias(amostras)
     dist = calcularDist(amostras, medias)
     PlotaMaiorDesvio(amostras, dist, medias)
+    PlotaDesvioPadrao(amostras, dist, medias)
+
+
+def treinoRegular(rawAmostras, test_size=0.97, random_state = 1):
+    """
+        Retorna o output método scipy regular de dividir as amostras em treino e teste.
+    """
+    #amostras é o vetor 2dim que concatena todas as amostras, eliminando a dimensão
+    #que separa os dados por arquivo
+    #nomes é o vetor que classifica cada elemento de amostras com sua respectiva classe
+    #utilizando indices entre 0 e 8
+    #concatenando os valores de rawAmostras para um formato 2dim
+    amostras = []
+    nomes = []
+    for i in range(np.size(rawAmostras, 0)):
+        for sinal in rawAmostras[i]:
+            amostras.append(sinal)
+            nomes.append(i)
+
+    #aqui o algoritmo train_test_split randomiza e distribui a amostra entre dois conjuntos
+    #o de teste e o de treino.
+    return train_test_split(amostras,nomes, test_size=test_size, random_state = random_state, stratify=nomes)
+
+def treinoMedia(rawAmostras, corte=20, embaralhar=True):
+    """
+        Retorna um conjunto de treino que contém apenas um exemplo por classe e esse é uma média dos primeiros 'corte' elementos de cada classe.
+        Retorna o restante como conjunto de testes
+    """
+    #Calculando o conjunto de treino
+    newRawAmostras = []
+    for i in range(np.size(rawAmostras, 0)):
+        #utilizando poucos elementos da classe para tirar a média
+        if embaralhar == True:
+            newRawAmostras.append(shuffle(rawAmostras[i])[:corte])
+        else:
+            newRawAmostras.append(rawAmostras[i][:corte])
+    medias = calcularMedias(newRawAmostras)
+    X_train = []
+    y_train = []
+    for i in range(np.size(medias, 0)):
+        X_train.append(medias[i])
+        y_train.append(i)
+
+
+    #Conjunto de testes composto pelo restante
+    newAmostras = []
+    newNomes = []
+    #para cada classe
+    for i in range(np.size(rawAmostras, 0)):
+        #embaralha ou não o conjunto de amostrs de teste, antes de colocar os labels
+        if embaralhar == True:
+            amostrasClasse = shuffle(rawAmostras[i][corte:])
+        else:
+            amostrasClasse = rawAmostras[i][corte:]
+        #pega cada amostra fora do corte e guarda num vetor newAmostra, com sua classe salva como um label no vetor newNomes
+        for classe in amostrasClasse:
+            newAmostras.append(classe)
+            newNomes.append(i)
+    #embaralha os labels (e as amostras associadas, junto) pra que não estejam em sequência mas mantenham sua relação() tipo y_test[i] <é a classe de>-> x_test[i], para todo i válido)
+    X_test, y_test = shuffle(newAmostras, newNomes)
+
+    return X_train, X_test, y_train, y_test
+

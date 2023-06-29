@@ -5,7 +5,7 @@ import numpy as np
 from matVetorial import *
 from csvutils import *
 
-def treinoRegular(rawAmostras, test_size=0.97, random_state = 1):
+def treinoRegular(rawAmostras, test_size=0.97, random_state = 0):
     """
         Retorna o output método scipy regular de dividir as amostras em treino e teste.
     """
@@ -25,7 +25,7 @@ def treinoRegular(rawAmostras, test_size=0.97, random_state = 1):
     #o de teste e o de treino.
     return train_test_split(amostras,nomes, test_size=test_size, random_state = random_state, stratify=nomes)
 
-def treinoMedia(rawAmostras, corte=18, embaralhar=True):
+def treinoMedia(rawAmostras, corte=18, embaralhar=True, random_state = 1):
     """
         Retorna um conjunto de treino que contém apenas um exemplo por classe e esse é uma média dos primeiros 'corte' elementos de cada classe.
         Retorna o restante como conjunto de testes
@@ -39,7 +39,7 @@ def treinoMedia(rawAmostras, corte=18, embaralhar=True):
     for i in range(np.size(rawAmostras, 0)):
         #utilizando poucos elementos da classe para tirar a média
         if embaralhar == True:
-            newRawAmostras.append(shuffle(rawAmostras[i])[:])
+            newRawAmostras.append(shuffle(rawAmostras[i], random_state = random_state)[:])
         else:
             newRawAmostras.append(rawAmostras[i][:])
 

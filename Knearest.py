@@ -4,7 +4,33 @@ import seaborn as sns
 import pandas as pd
 from myTools import *
 
-def testarKnn(path,dividirAmostra, k=1):
+
+def getraw(path):
+    rawAmostras, arquivos = getAmostra(path)
+    #sei que há um valor errado na amostra 325 da classe 5, cujo desvio é de 41. então o "removerei"
+    rawAmostras[5][325] = rawAmostras[5][324]
+    return rawAmostras, arquivos
+
+def testarK(X_train, X_test, y_train, y_test, kvalues=[5, 4, 3, 2, 1]):
+    """
+        Testa diferentes valores para k e imprime suas performances.
+    """
+    for k in kvalues:
+        knn_class = KNeighborsClassifier(n_neighbors=k)
+        knn_class.fit(X_train, y_train)
+        ypred=knn_class.predict(X_test)
+        resultado = classification_report(y_test, ypred)
+        print("Modelo para k = ", k)
+        print(resultado)
+
+def knnTest():
+    rawAmostra, arquivos = getraw('dados')
+    X_train, X_test, y_train, y_test = treinoRegular(rawAmostra)
+    #X_train, X_test, y_train, y_test = treinoMedia(rawAmostra)
+
+    testarK(X_train, X_test, y_train, y_test)
+
+def testarKnn(path,dividirAmostra, k=1, legenda=True):
     """
         Busca os dados em path, realiza a distribuição dos dados entre treino/teste com base na função dividirAmostra com os parametros args,
         cria um classificador KNN com k = k e realiza a plotagem dos resultados do teste
@@ -15,7 +41,6 @@ def testarKnn(path,dividirAmostra, k=1):
     #arquivos é um vetor com o nome de cada arquivo na ordem como serão usados
     #pelo algoritmo
 
-
     rawAmostras, arquivos = getAmostra(path)
 
     #mostrarVariancia(rawAmostras) #calcula e plota variância dos dados
@@ -25,10 +50,10 @@ def testarKnn(path,dividirAmostra, k=1):
     #-----------------------------
     #Conjunto de treino composto por apenas um exemplo para cada classe, onde esse exemplo é uma média do conjunto inteiro
 
-    knn_class = KNeighborsClassifier(n_neighbors=1)
+    knn_class = KNeighborsClassifier(n_neighbors=k)
 
     X_train, X_test, y_train, y_test = dividirAmostra(rawAmostras)
-    writeCSV(X_train, y_train, "xyTrain.csv")
+    #writeCSV(X_train, y_train, "xyTrain.csv")
     #treinando o classificador
     knn_class.fit(X_train, y_train)
     print("tamanho da amostra no treino: ", len(X_train))
@@ -42,9 +67,10 @@ def testarKnn(path,dividirAmostra, k=1):
 
     fig, ax = plt.subplots(2, 1)
 
-    print("legenda: ")
-    for i in range(len(arquivos)):
-        print(i, ": ",arquivos[i])
+    if legenda == True:
+        print("legenda: ")
+        for i in range(len(arquivos)):
+            print(i, ": ",arquivos[i])
     #print("Confusion Matrix:")
     #print(result)
     cmd = ConfusionMatrixDisplay(confusion_matrix=result)
@@ -57,6 +83,6 @@ def testarKnn(path,dividirAmostra, k=1):
     result2 = accuracy_score(y_test,ypred)
     print("Accuracy:",result2)
 
-#testarKnn('dados',treinoRegular)
-testarKnn('dados',treinoMedia)
-
+#testarKnn('dados',treinoRegular, legenda=False)
+testarKnn('dados',treinoMedia, legenda=False)
+#knnTest()

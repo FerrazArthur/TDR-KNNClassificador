@@ -55,6 +55,6 @@ def testarKnn(path,dividirAmostra, k=1):
     result2 = accuracy_score(y_test,ypred)
     print("Accuracy:",result2)
 
-#testarKnn('dados',treinoRegular)
-testarKnn('dados',treinoMedia)
+testarKnn('dados',treinoRegular)
+#testarKnn('dados',treinoMedia)
 

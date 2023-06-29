@@ -1,5 +1,7 @@
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+import seaborn as sns
+import pandas as pd
 from myTools import *
 
 def testarKnn(path,dividirAmostra, k=1):
@@ -55,6 +57,6 @@ def testarKnn(path,dividirAmostra, k=1):
     result2 = accuracy_score(y_test,ypred)
     print("Accuracy:",result2)
 
-testarKnn('dados',treinoRegular)
-#testarKnn('dados',treinoMedia)
+#testarKnn('dados',treinoRegular)
+testarKnn('dados',treinoMedia)
 

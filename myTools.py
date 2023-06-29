@@ -226,7 +226,7 @@ def treinoRegular(rawAmostras, test_size=0.97, random_state = 1):
     #o de teste e o de treino.
     return train_test_split(amostras,nomes, test_size=test_size, random_state = random_state, stratify=nomes)
 
-def treinoMedia(rawAmostras, corte=20, embaralhar=True):
+def treinoMedia(rawAmostras, corte=18, embaralhar=True):
     """
         Retorna um conjunto de treino que contém apenas um exemplo por classe e esse é uma média dos primeiros 'corte' elementos de cada classe.
         Retorna o restante como conjunto de testes

@@ -19,7 +19,7 @@ def testarKnn(path,dividirAmostra, k=1):
     #mostrarVariancia(rawAmostras) #calcula e plota variância dos dados
     #sei que há um valor errado na amostra 325 da classe 5, cujo desvio é de 41. então o "removerei"
     rawAmostras[5][325] = rawAmostras[5][324]
-    mostrarVariancia(rawAmostras)
+    #mostrarVariancia(rawAmostras)
     #-----------------------------
     #Conjunto de treino composto por apenas um exemplo para cada classe, onde esse exemplo é uma média do conjunto inteiro
 
@@ -53,7 +53,7 @@ def testarKnn(path,dividirAmostra, k=1):
     #print("Classification Report:")
     
     result2 = accuracy_score(y_test,ypred)
-    #print("Accuracy:",result2)
+    print("Accuracy:",result2)
 
 #testarKnn('dados',treinoRegular)
 testarKnn('dados',treinoMedia)

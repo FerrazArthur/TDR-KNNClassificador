@@ -30,7 +30,7 @@ def knnTest():
 
     testarK(X_train, X_test, y_train, y_test)
 
-def testarKnn(path,dividirAmostra, k=1, legenda=True):
+def testarKnn(path,dividirAmostra, test_size=0.994, k=1, legenda=True, amostra=True, accuracy=True, plotar=True, random_state = 0):
     """
         Busca os dados em path, realiza a distribuição dos dados entre treino/teste com base na função dividirAmostra com os parametros args,
         cria um classificador KNN com k = k e realiza a plotagem dos resultados do teste
@@ -52,37 +52,42 @@ def testarKnn(path,dividirAmostra, k=1, legenda=True):
 
     knn_class = KNeighborsClassifier(n_neighbors=k)
 
-    X_train, X_test, y_train, y_test = dividirAmostra(rawAmostras)
+    X_train, X_test, y_train, y_test = dividirAmostra(rawAmostras, test_size=test_size, random_state=random_state)
+    print(np.shape(y_train), np.shape(y_test))
+
     #writeCSV(X_train, y_train, "xyTrain.csv")
     #treinando o classificador
     knn_class.fit(X_train, y_train)
-    print("tamanho da amostra no treino: ", len(X_train))
-    print("tamanho da amostra no teste: ", len(X_test))
-    
+    if amostra == True:
+        print("tamanho da amostra no treino: ", len(X_train))
+        print("tamanho da amostra no teste: ", len(X_test))
+
     #realizando o teste
     ypred=knn_class.predict(X_test)
-    result = confusion_matrix(y_test, ypred)
-    
-    #imprimindo o resultado
 
-    fig, ax = plt.subplots(2, 1)
+    if plotar == True:
+        result = confusion_matrix(y_test, ypred)
+        
+        #imprimindo o resultado
 
-    if legenda == True:
-        print("legenda: ")
-        for i in range(len(arquivos)):
-            print(i, ": ",arquivos[i])
-    #print("Confusion Matrix:")
-    #print(result)
-    cmd = ConfusionMatrixDisplay(confusion_matrix=result)
-    cmd.plot(values_format="d", ax=ax[0])
-    result1 = classification_report(y_test, ypred, output_dict=True)
-    sns.heatmap(pd.DataFrame(result1).iloc[:-1, :].T, annot=True, ax=ax[1])
-    plt.show()
-    #print("Classification Report:")
-    
-    result2 = accuracy_score(y_test,ypred)
-    print("Accuracy:",result2)
+        fig, ax = plt.subplots(2, 1)
 
-#testarKnn('dados',treinoRegular, legenda=False)
-testarKnn('dados',treinoMedia, legenda=False)
+        if legenda == True:
+            print("legenda: ")
+            for i in range(len(arquivos)):
+                print(i, ": ",arquivos[i])
+        
+        cmd = ConfusionMatrixDisplay(confusion_matrix=result)
+        cmd.plot(values_format="d", ax=ax[0])
+        result1 = classification_report(y_test, ypred, output_dict=True)
+        sns.heatmap(pd.DataFrame(result1).iloc[:-1, :].T, annot=True, ax=ax[1])
+        plt.show()
+    if accuracy == True:
+        result2 = accuracy_score(y_test,ypred)
+        print("Accuracy:",result2)
+        return result2
+
+distrib = 0.994
+testarKnn('dados',treinoRegular, test_size=distrib, legenda=False)
+testarKnn('dados',treinoMedia, test_size=distrib,legenda=False)
 #knnTest()

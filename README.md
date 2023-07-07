@@ -4,10 +4,11 @@
 
 Todos os comandos abaixo assumem que você esta na pasta raiz do projeto.
 
-### Instale o gerenciador de ambientes virtuais python
+### Instale o gerenciador de ambientes virtuais python e as depts
 
 ```sh
 sudo apt install python3.10-venv
+sudo apt install python3-tk
 python3 -m pip install ---user virtualenv
 ```
 

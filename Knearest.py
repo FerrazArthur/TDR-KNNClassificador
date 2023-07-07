@@ -2,6 +2,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, ConfusionMatrixDisplay
 import seaborn as sns
 import pandas as pd
+import tkinter as tk
 from myTools import *
 
 
@@ -113,15 +114,41 @@ def getdata(path, treino, distrib, Krange):
     rawAmostras, _ = getAmostra(path)
     return [[k, [get_accuracy(rawAmostras, treino, distr) for distr in distrib]] for k in Krange]
 
+def plotar(dados, distribrange):
+    matriz = [[]]
+    rangek = []
+    for testek in dados:
+        rangek.append(testek[0])
+        matriz[0].append(testek[1])
+    janela = tk.Tk()
+    frame = tk.Frame(janela)
+    frame.pack()
+
+    # Adicionar rótulos dos eixos x
+    for j, rotulo in enumerate(distribrange):
+        label = tk.Label(frame, text=rotulo)
+        label.grid(row=0, column=j+1, padx=5, pady=5)
+
+    # Adicionar rótulos dos eixos y
+    for i, rotulo in enumerate(rangek):
+        label = tk.Label(frame, text="k="+str(rotulo))
+        label.grid(row=i+1, column=0, padx=5, pady=5)
+
+    # Adicionar cada número da matriz em uma célula
+    for i in range(len(matriz[0])):
+        for j in range(len(matriz[0][i])):
+            label = tk.Label(frame, text=str(matriz[0][i][j]))
+            label.grid(row=i+1, column=j+1, padx=5, pady=5)
+    janela.mainloop()
+
 krange = [5, 4, 3, 2, 1]
 distribrange = [0.965, 0.975, 0.985, 0.995]
-dadosregular = getdata('dados', treinoRegular, distribrange, krange)
+#dadosregular = getdata('dados', treinoRegular, distribrange, krange)
 dadosmedia = getdata('dados', treinoMedia, distribrange, krange)
-print(dadosmedia)
+plotar(dadosmedia, distribrange)
+#plotar(dadosregular, distribrange)
 
 #testarKnn('dados',treinoRegular, test_size=distrib, legenda=False)
 #testarKnn('dados',treinoMedia, test_size=distrib,legenda=False)
-
-
 
 #knnTest()

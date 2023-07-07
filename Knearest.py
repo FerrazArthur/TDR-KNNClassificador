@@ -11,10 +11,12 @@ def getraw(path):
     rawAmostras[5][325] = rawAmostras[5][324]
     return rawAmostras, arquivos
 
-def testarK(X_train, X_test, y_train, y_test, kvalues=[5, 4, 3, 2, 1]):
+def testarK(rawAmostras, dividirAmostra, kvalues=[5, 4, 3, 2, 1], test_size=0.994, random_state = 0):
     """
         Testa diferentes valores para k e imprime suas performances.
     """
+    X_train, X_test, y_train, y_test = dividirAmostra(rawAmostras, test_size=test_size, random_state=random_state)
+
     for k in kvalues:
         knn_class = KNeighborsClassifier(n_neighbors=k)
         knn_class.fit(X_train, y_train)
@@ -22,6 +24,7 @@ def testarK(X_train, X_test, y_train, y_test, kvalues=[5, 4, 3, 2, 1]):
         resultado = classification_report(y_test, ypred)
         print("Modelo para k = ", k)
         print(resultado)
+
 
 def knnTest():
     rawAmostra, arquivos = getraw('dados')
@@ -53,7 +56,6 @@ def testarKnn(path,dividirAmostra, test_size=0.994, k=1, legenda=True, amostra=T
     knn_class = KNeighborsClassifier(n_neighbors=k)
 
     X_train, X_test, y_train, y_test = dividirAmostra(rawAmostras, test_size=test_size, random_state=random_state)
-    print(np.shape(y_train), np.shape(y_test))
 
     #writeCSV(X_train, y_train, "xyTrain.csv")
     #treinando o classificador
@@ -82,12 +84,44 @@ def testarKnn(path,dividirAmostra, test_size=0.994, k=1, legenda=True, amostra=T
         result1 = classification_report(y_test, ypred, output_dict=True)
         sns.heatmap(pd.DataFrame(result1).iloc[:-1, :].T, annot=True, ax=ax[1])
         plt.show()
-    if accuracy == True:
-        result2 = accuracy_score(y_test,ypred)
-        print("Accuracy:",result2)
-        return result2
 
-distrib = 0.994
-testarKnn('dados',treinoRegular, test_size=distrib, legenda=False)
-testarKnn('dados',treinoMedia, test_size=distrib,legenda=False)
+    result2 = accuracy_score(y_test,ypred)
+    if accuracy == True:
+        print("Accuracy:",result2)
+    return result2
+
+def runbasic(X_train, X_test, y_train, y_test, k=1, random_state = 0):
+
+    knn_class = KNeighborsClassifier(n_neighbors=k)
+
+    #treinando o classificador
+    knn_class.fit(X_train, y_train)
+
+    #realizando o teste
+    ypred=knn_class.predict(X_test)
+    
+    return accuracy_score(y_test,ypred)
+
+def get_accuracy(rawAmostras, dividirAmostra, test_size=0.994, k=1, random_state = 0):
+
+    X_train, X_test, y_train, y_test = dividirAmostra(rawAmostras, test_size=test_size, random_state=random_state)
+    return runbasic(X_train, X_test, y_train, y_test, k=k)
+
+
+#para realizar o teste
+def getdata(path, treino, distrib, Krange):
+    rawAmostras, _ = getAmostra(path)
+    return [[k, [get_accuracy(rawAmostras, treino, distr) for distr in distrib]] for k in Krange]
+
+krange = [5, 4, 3, 2, 1]
+distribrange = [0.965, 0.975, 0.985, 0.995]
+dadosregular = getdata('dados', treinoRegular, distribrange, krange)
+dadosmedia = getdata('dados', treinoMedia, distribrange, krange)
+print(dadosmedia)
+
+#testarKnn('dados',treinoRegular, test_size=distrib, legenda=False)
+#testarKnn('dados',treinoMedia, test_size=distrib,legenda=False)
+
+
+
 #knnTest()

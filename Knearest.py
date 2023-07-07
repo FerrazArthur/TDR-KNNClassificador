@@ -50,7 +50,8 @@ def testarKnn(path,dividirAmostra, test_size=0.994, k=1, legenda=True, amostra=T
     #mostrarVariancia(rawAmostras) #calcula e plota variância dos dados
     #sei que há um valor errado na amostra 325 da classe 5, cujo desvio é de 41. então o "removerei"
     rawAmostras[5][325] = rawAmostras[5][324]
-    #mostrarVariancia(rawAmostras)
+    mostrarVariancia(rawAmostras)
+    return
     #-----------------------------
     #Conjunto de treino composto por apenas um exemplo para cada classe, onde esse exemplo é uma média do conjunto inteiro
 
@@ -112,9 +113,9 @@ def get_accuracy(rawAmostras, dividirAmostra, test_size=0.994, k=1, random_state
 #para realizar o teste
 def getdata(path, treino, distrib, Krange):
     rawAmostras, _ = getAmostra(path)
-    return [[k, [get_accuracy(rawAmostras, treino, distr) for distr in distrib]] for k in Krange]
+    return [[k, [get_accuracy(rawAmostras, treino, distr, k=k) for distr in distrib]] for k in Krange]
 
-def plotar(dados, distribrange):
+def plotar(dados, amostras):
     matriz = [[]]
     rangek = []
     for testek in dados:
@@ -125,8 +126,8 @@ def plotar(dados, distribrange):
     frame.pack()
 
     # Adicionar rótulos dos eixos x
-    for j, rotulo in enumerate(distribrange):
-        label = tk.Label(frame, text=rotulo)
+    for j, rotulo in enumerate(amostras):
+        label = tk.Label(frame, text=str(rotulo)+" amostras")
         label.grid(row=0, column=j+1, padx=5, pady=5)
 
     # Adicionar rótulos dos eixos y
@@ -137,18 +138,24 @@ def plotar(dados, distribrange):
     # Adicionar cada número da matriz em uma célula
     for i in range(len(matriz[0])):
         for j in range(len(matriz[0][i])):
-            label = tk.Label(frame, text=str(matriz[0][i][j]))
+            label = tk.Label(frame, text=str(round(matriz[0][i][j], 4)))
             label.grid(row=i+1, column=j+1, padx=5, pady=5)
     janela.mainloop()
 
+#testarKnn('dados',treinoRegular, test_size=0.994)
 krange = [5, 4, 3, 2, 1]
-distribrange = [0.965, 0.975, 0.985, 0.995]
-#dadosregular = getdata('dados', treinoRegular, distribrange, krange)
-dadosmedia = getdata('dados', treinoMedia, distribrange, krange)
-plotar(dadosmedia, distribrange)
-#plotar(dadosregular, distribrange)
+distribrange = [0.87, 0.95, 0.99, 0.995]
+amostras = []
 
-#testarKnn('dados',treinoRegular, test_size=distrib, legenda=False)
-#testarKnn('dados',treinoMedia, test_size=distrib,legenda=False)
+for value in distribrange:
+    amostras.append(floor(600 * (1-value)))
+
+dadosregular = getdata('dados', treinoRegular, distribrange, krange)
+dadosmedia = getdata('dados', treinoMedia, distribrange, krange)
+plotar(dadosmedia, amostras)
+plotar(dadosregular, amostras)
+
+testarKnn('dados',treinoRegular, test_size=distrib, legenda=False)
+testarKnn('dados',treinoMedia, test_size=distrib,legenda=False)
 
 #knnTest()

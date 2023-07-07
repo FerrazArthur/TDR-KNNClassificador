@@ -44,11 +44,11 @@ def calcularDist(amostras, medias):
 
 def plot2Signal(signal1, nome1, signal2, nome2):
     fig, ax = plt.subplots(2,1, sharex=True)
-    ax[0].stem(range(len(signal1)), signal1, linefmt='b-')
+    ax[0].plot(range(len(signal1)), signal1)
     ax[0].set_xlabel(nome1)
     ax[0].set_ylabel("amplitude")
     ax[0].grid(True)
-    ax[1].stem(range(len(signal1)), signal2, linefmt='b-')
+    ax[1].plot(range(len(signal1)), signal2)
     ax[1].set_xlabel(nome2)
     ax[1].set_ylabel("amplitude")
     ax[1].grid(True)

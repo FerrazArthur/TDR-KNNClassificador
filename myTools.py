@@ -5,7 +5,7 @@ import numpy as np
 from matVetorial import *
 from csvutils import *
 
-def treinoRegular(rawAmostras, test_size=0.97, random_state = 0):
+def treinoRegular(rawAmostras, test_size=0.994, random_state = 0):
     """
         Retorna o output método scipy regular de dividir as amostras em treino e teste.
     """
@@ -25,11 +25,14 @@ def treinoRegular(rawAmostras, test_size=0.97, random_state = 0):
     #o de teste e o de treino.
     return train_test_split(amostras,nomes, test_size=test_size, random_state = random_state, stratify=nomes)
 
-def treinoMedia(rawAmostras, corte=18, embaralhar=True, random_state = 1):
+def treinoMedia(rawAmostras, test_size=0.994, embaralhar=True, random_state = 1):
     """
         Retorna um conjunto de treino que contém apenas um exemplo por classe e esse é uma média dos primeiros 'corte' elementos de cada classe.
         Retorna o restante como conjunto de testes
     """
+    #considerando um conjunto uniformemente distribuido de amostras
+    corte = floor(np.size(rawAmostras[0], 0) * (1-test_size))
+    
     if corte >= np.size(rawAmostras[0][0], 0):
         print("o corte é grande demais para os dados disponíveis.")
         return
@@ -43,7 +46,7 @@ def treinoMedia(rawAmostras, corte=18, embaralhar=True, random_state = 1):
         else:
             newRawAmostras.append(rawAmostras[i][:])
 
-    medias = calcularMedias(newRawAmostras[:corte])
+    medias = calcularMedias([newRawAmostras[i][:corte] for i in range(np.size(newRawAmostras, 0))])
     X_train = []
     y_train = []
     for i in range(np.size(medias, 0)):
@@ -61,7 +64,7 @@ def treinoMedia(rawAmostras, corte=18, embaralhar=True, random_state = 1):
             newAmostras.append(amostra)
             newNomes.append(i)
     #embaralha os labels (e as amostras associadas, junto) pra que não estejam em sequência mas mantenham sua relação() tipo y_test[i] <é a classe de>-> x_test[i], para todo i válido)
-    X_test, y_test = shuffle(newAmostras, newNomes)
+    X_test, y_test = shuffle(newAmostras, newNomes, random_state=random_state)
 
     return X_train, X_test, y_train, y_test
 

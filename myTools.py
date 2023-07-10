@@ -25,14 +25,14 @@ def treinoRegular(rawAmostras, test_size=0.994, random_state = 0):
     #o de teste e o de treino.
     return train_test_split(amostras,nomes, test_size=test_size, random_state = random_state, stratify=nomes)
 
-def treinoMedia(rawAmostras, test_size=0.994, embaralhar=True, random_state = 1):
+def treinoMedia(rawAmostras, test_size=0.994, embaralhar=True, random_state = 0):
     """
         Retorna um conjunto de treino que contém apenas um exemplo por classe e esse é uma média dos primeiros 'corte' elementos de cada classe.
         Retorna o restante como conjunto de testes
     """
     #considerando um conjunto uniformemente distribuido de amostras
     corte = floor(np.size(rawAmostras[0], 0) * (1-test_size))
-    
+
     if corte >= np.size(rawAmostras[0][0], 0):
         print("o corte é grande demais para os dados disponíveis.")
         return

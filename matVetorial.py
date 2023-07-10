@@ -98,12 +98,36 @@ def imprimeDesvioPadrao(amostras, dist):
         desvioPadrao[-1] = sqrt(desvioPadrao[-1])
     
     for i in range(np.size(amostras, 0)):#para cada classe
-        print("Desvio padrao da classe ", i, " é igual a ", desvioPadrao[i])
+        print("Distância média da classe ", i, " é igual a ", round(distMedia[i], 4)," e apresenta um desvio padrão à média de ", round(desvioPadrao[i], 4))
+
+def imprimeDistanciaEntreClasses(amostras, medias):
+    '''
+    Calcula e imprime a distância euclidiana entre as médias de cada classe.
+    '''
+    menor = np.infty
+    maior = 0
+    dist = []
+    for i in range(np.size(amostras, 0)):
+        dist.append([])
+        for j in range(np.size(amostras, 0)):
+            if i == j:#evitar calcular a distância entre a mesma classe
+                dist[-1].append(0)
+            else:
+                dist[-1].append(minkowski_distance(medias[i], medias[j], 2))
+                #Mantém a menor distância entre classes calculada até então
+                if dist[-1][-1] < menor:
+                    menor = dist[-1][-1]
+            #Mantém a maior distância calculada até então
+            if dist[-1][-1] > maior:
+                maior = dist[-1][-1]
+    print("A menor distância entre distintas classes é ", round(menor, 4), " e a maior é ", round(maior, 4))
+    #showMatriz(dist)
 
 def mostrarVariancia(amostras):
     #amostras, arquivos = getAmostra(path)
 
     medias = calcularMedias(amostras)
     dist = calcularDist(amostras, medias)
-    imprimeMaiorDesvio(amostras, dist, medias)
+    #imprimeMaiorDesvio(amostras, dist, medias)
     imprimeDesvioPadrao(amostras, dist)
+    imprimeDistanciaEntreClasses(amostras, medias)

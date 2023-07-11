@@ -1,8 +1,3 @@
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, ConfusionMatrixDisplay
-import seaborn as sns
-import pandas as pd
-import tkinter as tk
 from myTools import *
 
 def testarKnn(path,dividirAmostra, test_size=0.994, k=1, legenda=True, amostra=True, 
@@ -78,54 +73,6 @@ def runbasic(X_train, X_test, y_train, y_test, k=1, random_state = 0):
     
     return accuracy_score(y_test,ypred)
 
-def get_accuracy(rawAmostras, dividirAmostra, test_size=0.994, k=1, random_state = 0):
-    X_train, X_test, y_train, y_test = dividirAmostra(rawAmostras, test_size=test_size,
-                                                       random_state=random_state)
-    return runbasic(X_train, X_test, y_train, y_test, k=k)
-
-#para realizar o teste
-def getdata(path, treino, distrib, Krange):
-    rawAmostras, _ = getAmostra(path)
-    return [[get_accuracy(rawAmostras, treino, distr, k=k) for distr in distrib] for k in Krange]
-
-def showMat(matriz, labelx, labely):
-    janela = tk.Tk()
-    frame = tk.Frame(janela)
-    frame.pack()
-    # Adicionar rótulos dos eixos x
-    for i, rotulo in enumerate(labelx):
-        label = tk.Label(frame, text=str(rotulo))
-        label.grid(row=0, column=i+1, padx=5, pady=5)
-
-    # Adicionar rótulos dos eixos y
-    for i, rotulo in enumerate(labely):
-        label = tk.Label(frame, text=str(rotulo))
-        label.grid(row=i+1, column=0, padx=5, pady=5)
-
-    # Adicionar cada número da matriz em uma célula
-    for i in range(len(matriz)):
-        for j in range(len(matriz[i])):
-            label = tk.Label(frame, text=str(round(matriz[i][j], 4)))
-            label.grid(row=i+1, column=j+1, padx=5, pady=5)
-    janela.mainloop()
-
-def imprimeTestesMultiplos(matriz, distribrange, rangek):
-    """
-    Essa função cria nomes para rotular as linhas e colunas da matriz que será exibida.
-    """
-    labely = []
-    labelx = []
-
-    # Cria rótulos do eixo y
-    for rotulo in rangek:
-        labely.append("k = "+str(rotulo))
-    #cria rótulos do eixo x
-    for value in distribrange:
-        #calcula o número de amostras de cada distribuição
-        labelx.append(str(floor(600 * (1.0-value)))+" amostras")
-    # Passa a matriz, os rótulos dos eixos x e y para a função que desenha a matriz numa janela
-    showMat(matriz, labelx, labely)
-
 def realizaTestesMultiplos(rangek=[5, 4, 3, 2, 1], distribrange=[0.87, 0.95, 0.99, 0.995],
                             treinos=[treinoRegular, treinoMedia]):
     """
@@ -139,13 +86,15 @@ def realizaTestesMultiplos(rangek=[5, 4, 3, 2, 1], distribrange=[0.87, 0.95, 0.9
         #exibe os resultados em uma matriz
         imprimeTestesMultiplos(dados, distribrange, rangek)
 
-    # dadosregular = getdata('dados', treinoRegular, distribrange, krange)
-    # dadosmedia = getdata('dados', treinoMedia, distribrange, krange)
-    # plotar(dadosmedia, amostras)
-    # plotar(dadosregular, amostras)
+def get_accuracy(rawAmostras, dividirAmostra, test_size=0.994, k=1, random_state = 0):
+    X_train, X_test, y_train, y_test = dividirAmostra(rawAmostras, test_size=test_size,
+                                                       random_state=random_state)
+    return runbasic(X_train, X_test, y_train, y_test, k=k)
 
-    # testarKnn('dados',treinoRegular, test_size=distrib, legenda=False)
-    # testarKnn('dados',treinoMedia, test_size=distrib,legenda=False)
+#para realizar o teste
+def getdata(path, treino, distrib, Krange):
+    rawAmostras, _ = getAmostra(path)
+    return [[get_accuracy(rawAmostras, treino, distr, k=k) for distr in distrib] for k in Krange]
 
 testarKnn('dados', treinoRegular, test_size=0.994)
 realizaTestesMultiplos()

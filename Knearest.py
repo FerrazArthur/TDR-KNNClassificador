@@ -17,9 +17,8 @@ def testarKnn(path,dividirAmostra, test_size=0.994, k=1, legenda=True, amostra=T
 
     #mostrarVariancia(rawAmostras) #calcula e plota variância dos dados
     #sei que há um valor errado na amostra 325 da classe 5, cujo desvio é de 41. então o "removerei"
-    rawAmostras[5][325] = rawAmostras[5][324]
-    mostrarVariancia(rawAmostras)
-    return
+    #rawAmostras[5][325] = rawAmostras[5][324]
+    # mostrarVariancia(rawAmostras)
     #-----------------------------
     #Conjunto de treino composto por apenas um exemplo para cada classe, onde esse exemplo é uma média do 
     #   conjunto inteiro
@@ -30,19 +29,19 @@ def testarKnn(path,dividirAmostra, test_size=0.994, k=1, legenda=True, amostra=T
                                                       random_state=random_state)
 
     #writeCSV(X_train, y_train, "xyTrain.csv")
-    #treinando o classificador
+    # Treinando o classificador
     knn_class.fit(X_train, y_train)
     if amostra == True:
         print("tamanho da amostra no treino: ", len(X_train))
         print("tamanho da amostra no teste: ", len(X_test))
 
-    #realizando o teste
+    # Realizando o teste
     ypred=knn_class.predict(X_test)
 
     if plotar == True:
         result = confusion_matrix(y_test, ypred)
         
-        #imprimindo o resultado
+        # Imprimindo o resultado
 
         fig, ax = plt.subplots(2, 1)
 
@@ -65,10 +64,10 @@ def testarKnn(path,dividirAmostra, test_size=0.994, k=1, legenda=True, amostra=T
 def runbasic(X_train, X_test, y_train, y_test, k=1, random_state = 0):
     knn_class = KNeighborsClassifier(n_neighbors=k)
 
-    #treinando o classificador
+    # Treinando o classificador
     knn_class.fit(X_train, y_train)
 
-    #realizando o teste
+    # Realizando o teste
     ypred=knn_class.predict(X_test)
     
     return accuracy_score(y_test,ypred)
@@ -81,9 +80,9 @@ def realizaTestesMultiplos(rangek=[5, 4, 3, 2, 1], distribrange=[0.87, 0.95, 0.9
     """
         
     for treino in treinos:
-        #realiza o treino do classificador para cada distribuição e para cada valor de k
+        # Realiza o treino do classificador para cada distribuição e para cada valor de k
         dados =  getdata('dados', treino, distribrange, rangek)
-        #exibe os resultados em uma matriz
+        # Exibe os resultados em uma matriz
         imprimeTestesMultiplos(dados, distribrange, rangek)
 
 def get_accuracy(rawAmostras, dividirAmostra, test_size=0.994, k=1, random_state = 0):
@@ -91,12 +90,12 @@ def get_accuracy(rawAmostras, dividirAmostra, test_size=0.994, k=1, random_state
                                                        random_state=random_state)
     return runbasic(X_train, X_test, y_train, y_test, k=k)
 
-#para realizar o teste
+# Para realizar o teste
 def getdata(path, treino, distrib, Krange):
     rawAmostras, _ = getAmostra(path)
     return [[get_accuracy(rawAmostras, treino, distr, k=k) for distr in distrib] for k in Krange]
 
-testarKnn('dados', treinoRegular, test_size=0.994)
-realizaTestesMultiplos()
+testarKnn('dados_2_cargas_2', treinoRegular, test_size=0.95)
+# realizaTestesMultiplos()
 # testarMultiplos()
 #knnTest()

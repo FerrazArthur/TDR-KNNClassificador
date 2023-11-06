@@ -1,6 +1,10 @@
 from pathlib import Path
+from typing import Dict
+
 import numpy as np
+import pandas as pd
 import re
+
 
 def loadCSVMatrix(nomeArquivo):
     '''
@@ -15,6 +19,51 @@ def loadCSVMatrix(nomeArquivo):
         tabela.append(np.array(linha.split(';')))
     tabela=np.asarray(tabela, dtype=float)
     return tabela
+
+def load_csv(nomeArquivo: Path)-> pd.DataFrame:
+    """
+    Loads a csv file into a pandas dataframe.
+    
+    Args:
+        nomeArquivo (Path): Path to the csv file.
+    
+    Returns:
+        pd.DataFrame: Dataframe with the csv file.
+    """
+    return pd.read_csv(nomeArquivo, sep=';')
+
+def explore_csv_dataframe(path: Path):
+    """
+    Explores a directory and returns a list of dataframe with all the csv files in it.
+    
+    Args:
+        path (Path): Path to the directory containing the csv files.
+    
+    Raises:
+        TypeError: If the path is not a Path or str.
+        NotADirectoryError: If the path is not a directory.
+        ValueError: If the directory is empty.
+    
+    Returns:
+        List[pd.DataFrame]: List of dataframes with the csv files.
+    """
+    # Enforces path to be a Path object
+    path = Path(path)
+    if not isinstance(path, str) and not isinstance(path, Path):
+        raise TypeError('path must be a Path or str object.')
+    if path.is_dir() == False:
+        raise NotADirectoryError('path must be a directory.')
+    
+    csv_dict = {}
+    for csv in path.iterdir():
+        if csv.suffix.lower() == '.csv':
+            # Format of file name is <number>-<name>.csv
+            csv_dict[csv.stem.split('-')[1]] = load_csv(csv)
+    
+    if csv_dict == {}:
+        raise ValueError('Directory is empty.')
+
+    return csv_dict
 
 def writeCSV(x, y, nomeArquivo):
     '''
@@ -50,7 +99,6 @@ def getAmostra(path):
     dados = sorted(Path(path).glob('*'))
     amostras = []
     classes = []
-    print()
     for csv in dados:
         amostras.append(loadCSVMatrix(csv))
         #armazenando os nomes sem o caminho

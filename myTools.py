@@ -8,7 +8,7 @@ import pandas as pd
 import tkinter as tk
 import numpy as np
 from matVetorial import *
-from csvutils import *
+from data.retrieve import *
 
 def treinoRegular(rawAmostras, test_size=0.994, random_state = 0):
     """
@@ -23,6 +23,7 @@ def treinoRegular(rawAmostras, test_size=0.994, random_state = 0):
     nomes = []
     for i in range(np.size(rawAmostras, 0)):
         for sinal in rawAmostras[i]:
+            print(sinal)
             amostras.append(sinal)
             nomes.append(i)
 

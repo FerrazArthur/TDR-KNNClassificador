@@ -1,5 +1,6 @@
 from dados.leitura import explorar_dataframe_csv
 from pathlib import Path
+from scipy import stats
 
 class Dados:
     """
@@ -15,7 +16,6 @@ class Dados:
         self.classes_lista = list(self.dicionario_dados.keys())
         self.num_classes = len(self.legenda)
         self.num_amostras = sum(df.shape[0] for df in self.dicionario_dados.values())
-
 
     def normalizar_amostras(self):
         """
@@ -41,6 +41,39 @@ class Dados:
             if dataframe.shape[0] > min_amostras:
                 # Remover o excedente de amostras
                 self.dicionario_dados[classe] = dataframe.sample(min_amostras)
+
+        # Atualizar o número total de amostras
+        self.num_amostras = sum(df.shape[0] for df in self.dicionario_dados.values())
+    
+    def remover_outliers(self, limite:int=3):
+        """
+        Remove outliers de todos os dataframes no dicionário de dados.
+
+        A função percorre todas as classes no dicionário de dados e remove os outliers de cada classe.
+
+        Args:
+            limite (int, opcional): Limite para o z-score. Padrão é 3.
+
+        Raises:
+            None
+
+        Returns:
+            None
+        """
+        # Iterar sobre cada classe e remover os outliers
+        for classe in self.classes_lista:
+            # Calcular médias e desvios padrão de cada coluna
+            medias = self.dicionario_dados[classe].mean()
+            desvios_padrao = self.dicionario_dados[classe].std()
+
+            # Calcular z-scores coluna a coluna
+            z_scores = (self.dicionario_dados[classe] - medias) / desvios_padrao
+
+            # Verificar se algum valor na linha excede os limites em sua respectiva coluna
+            linhas_sem_outliers = ((z_scores > -limite) & (z_scores < limite)).all(axis=1)
+
+            # Manter apenas as linhas sem outliers no DataFrame
+            self.dicionario_dados[classe] = self.dicionario_dados[classe][linhas_sem_outliers]
 
         # Atualizar o número total de amostras
         self.num_amostras = sum(df.shape[0] for df in self.dicionario_dados.values())

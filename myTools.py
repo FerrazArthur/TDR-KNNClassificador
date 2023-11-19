@@ -1,6 +1,11 @@
 
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+import seaborn as sns
+import pandas as pd
+import tkinter as tk
 import numpy as np
 from matVetorial import *
 from csvutils import *
@@ -25,14 +30,14 @@ def treinoRegular(rawAmostras, test_size=0.994, random_state = 0):
     #o de teste e o de treino.
     return train_test_split(amostras,nomes, test_size=test_size, random_state = random_state, stratify=nomes)
 
-def treinoMedia(rawAmostras, test_size=0.994, embaralhar=True, random_state = 1):
+def treinoMedia(rawAmostras, test_size=0.994, embaralhar=True, random_state = 0):
     """
         Retorna um conjunto de treino que contém apenas um exemplo por classe e esse é uma média dos primeiros 'corte' elementos de cada classe.
         Retorna o restante como conjunto de testes
     """
     #considerando um conjunto uniformemente distribuido de amostras
     corte = floor(np.size(rawAmostras[0], 0) * (1-test_size))
-    
+
     if corte >= np.size(rawAmostras[0][0], 0):
         print("o corte é grande demais para os dados disponíveis.")
         return
@@ -68,3 +73,19 @@ def treinoMedia(rawAmostras, test_size=0.994, embaralhar=True, random_state = 1)
 
     return X_train, X_test, y_train, y_test
 
+def imprimeTestesMultiplos(matriz, distribrange, rangek):
+    """
+    Essa função cria nomes para rotular as linhas e colunas da matriz que será exibida.
+    """
+    labely = []
+    labelx = []
+
+    # Cria rótulos do eixo y
+    for rotulo in rangek:
+        labely.append("k = "+str(rotulo))
+    #cria rótulos do eixo x
+    for value in distribrange:
+        #calcula o número de amostras de cada distribuição
+        labelx.append(str(floor(600 * (1.0-value)))+" amostras")
+    # Passa a matriz, os rótulos dos eixos x e y para a função que desenha a matriz numa janela
+    showMat(matriz, labelx, labely)

@@ -1,6 +1,7 @@
 from decimal import Decimal
 from math import *
 import numpy as np
+import tkinter as tk
 import matplotlib.pyplot as plt
 
 def p_root(value, root):
@@ -41,19 +42,6 @@ def calcularDist(amostras, medias):
         for j in range(np.size(amostras[i], 0)):
             distancias[i].append(minkowski_distance(amostras[i][j], medias[i], 2))
     return np.array(distancias)
-
-def plot2Signal(signal1, nome1, signal2, nome2):
-    fig, ax = plt.subplots(2,1, sharex=True)
-    ax[0].plot(range(len(signal1)), signal1)
-    ax[0].set_xlabel(nome1)
-    ax[0].set_ylabel("amplitude")
-    ax[0].grid(True)
-    ax[1].plot(range(len(signal1)), signal2)
-    ax[1].set_xlabel(nome2)
-    ax[1].set_ylabel("amplitude")
-    ax[1].grid(True)
-    fig.tight_layout()
-    plt.show()
 
 def imprimeMaiorDesvio(amostras, distancias, medias, imprime=True):
     '''
@@ -98,12 +86,76 @@ def imprimeDesvioPadrao(amostras, dist):
         desvioPadrao[-1] = sqrt(desvioPadrao[-1])
     
     for i in range(np.size(amostras, 0)):#para cada classe
-        print("Desvio padrao da classe ", i, " é igual a ", desvioPadrao[i])
+        print("Distância média da classe ", i, " é igual a ", round(distMedia[i], 4)," e apresenta um desvio padrão à média de ", round(desvioPadrao[i], 4))
+
+def imprimeDistanciaEntreClasses(amostras, medias):
+    '''
+    Calcula e imprime a distância euclidiana entre as médias de cada classe.
+    '''
+    menor = np.infty
+    maior = 0
+    dist = []
+    for i in range(np.size(amostras, 0)):
+        dist.append([])
+        for j in range(np.size(amostras, 0)):
+            if i == j:#evitar calcular a distância entre a mesma classe
+                dist[-1].append(0)
+            else:
+                dist[-1].append(minkowski_distance(medias[i], medias[j], 2))
+                #Mantém a menor distância entre classes calculada até então
+                if dist[-1][-1] < menor:
+                    menor = dist[-1][-1]
+            #Mantém a maior distância calculada até então
+            if dist[-1][-1] > maior:
+                maior = dist[-1][-1]
+    print("A menor distância entre distintas classes é ", round(menor, 4), " e a maior é ", round(maior, 4))
+    labels = []
+    for i in range(np.size(amostras, 0)):
+        labels.append("Classe " + str(i))
+    showMat(dist,labels, labels)
 
 def mostrarVariancia(amostras):
     #amostras, arquivos = getAmostra(path)
 
     medias = calcularMedias(amostras)
     dist = calcularDist(amostras, medias)
-    imprimeMaiorDesvio(amostras, dist, medias)
+    #imprimeMaiorDesvio(amostras, dist, medias)
     imprimeDesvioPadrao(amostras, dist)
+    imprimeDistanciaEntreClasses(amostras, medias)
+
+def plot2Signal(signal1, nome1, signal2, nome2):
+    fig, ax = plt.subplots(2,1, sharex=True)
+    ax[0].plot(range(len(signal1)), signal1)
+    ax[0].set_xlabel(nome1)
+    ax[0].set_ylabel("amplitude")
+    ax[0].grid(True)
+    ax[1].plot(range(len(signal1)), signal2)
+    ax[1].set_xlabel(nome2)
+    ax[1].set_ylabel("amplitude")
+    ax[1].grid(True)
+    fig.tight_layout()
+    plt.show()
+
+def showMat(matriz, labelx=[], labely=[]):
+    """
+    Imprime a matriz em uma janela do tkinter
+    """
+    janela = tk.Tk()
+    frame = tk.Frame(janela)
+    frame.pack()
+    # Adicionar rótulos dos eixos x
+    for i, rotulo in enumerate(labelx):
+        label = tk.Label(frame, text=str(rotulo))
+        label.grid(row=0, column=i+1, padx=5, pady=5)
+
+    # Adicionar rótulos dos eixos y
+    for i, rotulo in enumerate(labely):
+        label = tk.Label(frame, text=str(rotulo))
+        label.grid(row=i+1, column=0, padx=5, pady=5)
+
+    # Adicionar cada número da matriz em uma célula
+    for i in range(len(matriz)):
+        for j in range(len(matriz[i])):
+            label = tk.Label(frame, text=str(round(matriz[i][j], 3)))
+            label.grid(row=i+1, column=j+1, padx=5, pady=5)
+    janela.mainloop()

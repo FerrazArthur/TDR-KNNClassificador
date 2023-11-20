@@ -14,7 +14,6 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
         print("Acurácia:", acuracia)
 
     cmd = ConfusionMatrixDisplay(confusion_matrix=matriz_confusao, display_labels=dados.classes_lista)
-    plt.figure(figsize=(10, 10), dpi=300)
     fig, ax = plt.subplots(figsize=(16,16))
     cmd.plot(values_format=".2g", ax=ax, xticks_rotation=45)
 
@@ -30,7 +29,6 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
         plt.close()
     else:
         plt.show()
-
 
 def mostra_matriz(matriz, label_x=[], label_y=[]):
     """
@@ -72,3 +70,17 @@ def imprime_testes_multiplos(matriz, tamanho_treino_lista, k_lista):
         label_x.append(str(value)+" amostras")
     # Passa a matriz, os rótulos dos eixos x e y para a função que desenha a matriz numa janela
     mostra_matriz(matriz, label_x, label_y)
+
+def imprimir_contagem_amostras(y_train, y_test):
+    """
+    Imprime a contagem de amostras em cada classe no conjunto de treino e teste.
+    Args:
+        y_train (List): Lista com as classes do conjunto de treino.
+        y_test (List): Lista com as classes do conjunto de teste.
+    Returns:
+        None
+    """
+    train_counts = pd.Series(y_train).value_counts().to_string()
+    test_counts = pd.Series(y_test).value_counts().to_string()
+    print("Amostras no Conjunto de Treino:\n", train_counts)
+    print("Amostras no Conjunto de Teste:\n", test_counts)

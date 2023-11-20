@@ -1,4 +1,4 @@
 *.csv
-fig/*
+figs/*
 env
 [0-9]*

@@ -5,7 +5,7 @@ from scipy import stats
 class Dados:
     """
     Classe que representa os dados de um conjunto de dados.
-    dict_dados: dicionário de dataframes com os dados.
+    dict_dados: dicionário de dataframes com os dados.r
     legenda: lista com o nome das classes.
     num_classes: número de classes.
     num_amostras: número total de amostras.

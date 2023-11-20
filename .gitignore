@@ -1,5 +1,3 @@
-*.csv
-fig/*
 env
 fig/*
 [0-9]*

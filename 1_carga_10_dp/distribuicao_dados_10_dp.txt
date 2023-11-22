@@ -5,6 +5,16 @@ ANTES DE FILTRAR OUTLIERS COM 10*Z_SCORE:
 Tamanho do conjunto de dados:  4792
 Amostra mais variada: (classe, linha, distancia à média) ('Lampada E4', 324, 40.91433969322868)
 
+                  Circuito aberto Curto Circuito   Ebulidor Grilling machine Lampada E3 Lampada E4 Luminaria LED Secador de cabelo
+Circuito aberto               0.0      28.827921  19.549578        21.178404  17.897486  17.369578     21.328898         24.521907
+Curto Circuito          28.827921            0.0  11.573698         9.771774  13.001724  13.630307      8.805607         15.142879
+Ebulidor                19.549578      11.573698        0.0         3.427175   9.065195   9.272122       6.06714          15.93476
+Grilling machine        21.178404       9.771774   3.427175              0.0   9.173069   9.576227      3.961654         16.082913
+Lampada E3              17.897486      13.001724   9.065195         9.173069        0.0   1.148132      8.267257         10.524135
+Lampada E4              17.369578      13.630307   9.272122         9.576227   1.148132        0.0       8.66067         10.711798
+Luminaria LED           21.328898       8.805607    6.06714         3.961654   8.267257    8.66067           0.0         15.425482
+Secador de cabelo       24.521907      15.142879   15.93476        16.082913  10.524135  10.711798     15.425482               0.0
+
 DEPOIS DE FILTRAR:
 
 tamanho do conjunto de dados:  4791
@@ -13,6 +23,16 @@ Amostra mais variada: (classe, linha, distancia à média) ('Circuito aberto', 2
 DEPOIS DE NORMALIZAR:
 
 tamanho do conjunto de dados:  4784
+
+                  Circuito aberto Curto Circuito   Ebulidor Grilling machine Lampada E3 Lampada E4 Luminaria LED Secador de cabelo
+Circuito aberto               0.0      28.828212  19.549212         21.17885  17.897461  17.346986     21.329276         24.521571
+Curto Circuito          28.828212            0.0  11.574228         9.771717  13.001938  13.650343      8.805553         15.143229
+Ebulidor                19.549212      11.574228        0.0         3.428068   9.064827   9.277309       6.06754         15.934221
+Grilling machine         21.17885       9.771717   3.428068              0.0   9.173072   9.581348      3.961703         16.082877
+Lampada E3              17.897461      13.001938   9.064827         9.173072        0.0    1.12636      8.267467         10.523979
+Lampada E4              17.346986      13.650343   9.277309         9.581348    1.12636        0.0      8.674726         10.720184
+Luminaria LED           21.329276       8.805553    6.06754         3.961703   8.267467   8.674726           0.0         15.425619
+Secador de cabelo       24.521571      15.143229  15.934221        16.082877  10.523979  10.720184     15.425619               0.0
 
 #------ SOBRE OS RESULTADOS -------#
 
@@ -102,7 +122,7 @@ Ebulidor             568
 Lampada E3           568
 Luminaria LED        568
 
-*------ COM 240 AMOSTRAS -----*
+*------ COM 480 AMOSTRAS -----*
 
 Amostras no Conjunto de Treino:
  Curto Circuito       60

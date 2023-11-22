@@ -1,5 +1,5 @@
 from dados.leitura import explorar_dataframe_csv
-from metricas.metricas import obter_vetor_distancias_a_media_dataframe
+from metricas.metricas import obter_vetor_distancias_a_media_dataframe, obter_escore_padrao
 
 from pathlib import Path
 from scipy import stats
@@ -23,6 +23,7 @@ class Dados:
     def normalizar_amostras(self, imprimir:bool=False):
         """
         Normaliza o número de amostras em todas as classes, removendo o excedente das classes que têm mais amostras.
+        Ao remover, escolhe as amostras que tiverem o maior z-score.
 
         A função percorre todas as classes no dicionário de dados e, se uma classe tiver mais amostras do que o
         número mínimo encontrado, ela remove o excedente de amostras de forma aleatória.
@@ -77,15 +78,8 @@ class Dados:
             # Iterar sobre cada classe e remover os outliers
             iteracoes += 1
             for classe in self.classes_lista:
-                
-                # Calcular médias e desvios padrão de cada coluna
-                distancias = obter_vetor_distancias_a_media_dataframe(self.dicionario_dados[classe])
-
-                media = distancias.mean()
-                desvio_padrao = distancias.std(ddof=ddof)
-
                 # Calcular z-scores para cada linha
-                z_scores = (distancias - media) / desvio_padrao
+                z_scores = obter_escore_padrao(self.dicionario_dados[classe], ddof=ddof)
 
                 # Verificar se alguma linha excede os limites superior ou inferior de z-score
                 linhas_sem_outliers = (abs(z_scores) < limite)

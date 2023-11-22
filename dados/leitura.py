@@ -40,8 +40,11 @@ def explorar_dataframe_csv(diretorio: Path) -> Dict[str, pd.DataFrame]:
         raise NotADirectoryError('O caminho deve ser um diretório.')
     
     csv_dict = {}
-    
-    for csv in sorted(diretorio.iterdir(), key=lambda x: int(x.stem.split('-')[0])):
+
+    # Filter the list of files
+    csv_files = [file for file in diretorio.iterdir() if file.suffix.lower() == '.csv']
+
+    for csv in sorted(csv_files, key=lambda x: int(x.stem.split('-')[0]) if x.stem[0].isdigit() else x.stem):
         if csv.suffix.lower() == '.csv':
             # Formato do nome do arquivo é <número>-<nome>.csv
             csv_dict[csv.stem.split('-')[1]] = carregar_csv(csv)

@@ -11,17 +11,10 @@ from dados.escrita import salvar_dataframes_csv
 
 # run_multiple_tests([1], [0.8], [treino_media], path='dados_2_cargas')
 #run_multiple_tests__train_explicit([1, 3, 5], [15, 30, 60, 120, 240, 480], [treino_regular_explicit, treino_media_explicit], path='dados_2_cargas')
-#conjunto_dados = Dados('2_cargas_3_dp')
-conjunto_dados = Dados('2_cargas_raw')
-conjunto_dados.remover_outliers(3, imprimir=True)
-conjunto_dados.normalizar_amostras(imprimir=True)
-# conjunto_dados.remover_outliers(3, imprimir=True)
-
-
-#pior_classe, _, _ = obter_linha_maior_distancia_minkowski_entre_dataframes(conjunto_dados.dicionario_dados, p=2)
-#imprime_distribuicao_distancias(obter_vetor_distancias_a_media_dataframe(conjunto_dados.dicionario_dados[pior_classe], p=2))
+conjunto_dados = Dados('1_carga_3_dp')
+pior_classe, _, _ = obter_linha_maior_distancia_minkowski_entre_dataframes(conjunto_dados.dicionario_dados, p=2)
+imprime_distribuicao_distancias(obter_vetor_distancias_a_media_dataframe(conjunto_dados.dicionario_dados[pior_classe], p=2))
 #print(conjunto_dados.dicionario_dados[pior_classe][45].to_string)
-salvar_dataframes_csv(conjunto_dados.dicionario_dados, '2_cargas_3_dp')
 #print(conjunto_dados.num_classes)
 #obter_distancia_media_minkowski_entre_dataframe(conjunto_dados, p=2)
 #obter_distancia_media_minkowski_entre_media_dataframe(conjunto_dados, p=2)

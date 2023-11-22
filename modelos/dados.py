@@ -22,17 +22,16 @@ class Dados:
 
     def normalizar_amostras(self, imprimir:bool=False):
         """
-        Normaliza o número de amostras em todas as classes, removendo o excedente das classes que têm mais amostras.
-        Ao remover, escolhe as amostras que tiverem o maior z-score.
-
-        A função percorre todas as classes no dicionário de dados e, se uma classe tiver mais amostras do que o
-        número mínimo encontrado, ela remove o excedente de amostras de forma aleatória.
+        Normaliza o número de amostras em todas as classes. Para tanto, a função percorre todas as classes no
+        dicionário de dados e, se uma classe tiver mais amostras do que o
+        número mínimo encontrado, ela remove o excedente de amostras.
 
         Esta função é útil para garantir que todas as classes tenham o mesmo número de amostras, facilitando
         comparações e análises.
 
         Args:
-            imprimir (bool, opcional): Se True, imprime o número de amostras de cada classe antes e depois da normalização. Padrão é False.
+            imprimir (bool, opcional): Se True, imprime o número de amostras de cada classe antes e depois da 
+            normalização. Padrão é False.
 
         Raises:
             None
@@ -41,13 +40,18 @@ class Dados:
             None
         """
         # Encontrar o número mínimo de amostras entre todas as classes
-        min_amostras = min(df.shape[0] for df in self.dicionario_dados.values())
+        max_amostras = min(df.shape[0] for df in self.dicionario_dados.values())
 
         # Iterar sobre cada classe e remover o excedente de amostras
         for classe, dataframe in self.dicionario_dados.items():
-            if dataframe.shape[0] > min_amostras:
+            if dataframe.shape[0] > max_amostras:
+                # Calcular valores absolutos dos z-scores
+                abs_z_scores = np.abs(obter_escore_padrao(dataframe))
+
+                # Identificar índices das amostras com maiores valores absolutos de z-score
+                idx_to_remove = abs_z_scores.argsort()[:-max_amostras]
                 # Remover o excedente de amostras e redefinir os índices
-                self.dicionario_dados[classe] = dataframe.sample(min_amostras).reset_index(drop=True)
+                self.dicionario_dados[classe] = dataframe.drop(idx_to_remove).reset_index(drop=True)
 
         # Atualizar o número total de amostras
         self.num_amostras = sum(df.shape[0] for df in self.dicionario_dados.values())
@@ -64,7 +68,8 @@ class Dados:
         Args:
             limite (int, opcional): Limite para o z-score. Padrão é 3.
             ddof (int, opcional): Graus de liberdade para o cálculo do desvio padrão. Padrão é 1.
-            imprimir (bool, opcional): Se True, imprime o tamanho do conjunto de dados após cada iteração. Padrão é False.
+            imprimir (bool, opcional): Se True, imprime o tamanho do conjunto de dados após cada iteração. 
+            Padrão é False.
 
         Raises:
             None
@@ -85,7 +90,8 @@ class Dados:
                 linhas_sem_outliers = (abs(z_scores) < limite)
 
                 # Manter apenas as linhas sem outliers no DataFrame
-                self.dicionario_dados[classe] = self.dicionario_dados[classe][linhas_sem_outliers].reset_index(drop=True)
+                self.dicionario_dados[classe] = \
+                    self.dicionario_dados[classe][linhas_sem_outliers].reset_index(drop=True)
 
             # Atualizar o número total de amostras
             self.num_amostras = sum(df.shape[0] for df in self.dicionario_dados.values())
@@ -93,6 +99,7 @@ class Dados:
             if self.num_amostras == tamanho_anterior:
                 break
             if imprimir == True:
-                print(f"Tamanho do conjunto de dados após remover os outliers {iteracoes} vez(es): {self.num_amostras}")
+                print(f"Tamanho do conjunto de dados após remover os outliers {iteracoes} vezes:\
+                       {self.num_amostras}")
 
             tamanho_anterior = self.num_amostras

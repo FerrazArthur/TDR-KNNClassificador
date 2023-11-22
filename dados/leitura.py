@@ -15,7 +15,7 @@ def carregar_csv(nome_arquivo: Path) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame com o arquivo csv.
     """
-    return pd.read_csv(nome_arquivo, sep=';')
+    return pd.read_csv(nome_arquivo, sep=';', header=None, index_col=None)
 
 def explorar_dataframe_csv(diretorio: Path) -> Dict[str, pd.DataFrame]:
     """

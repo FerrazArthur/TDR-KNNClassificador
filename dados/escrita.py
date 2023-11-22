@@ -24,4 +24,4 @@ def salvar_dataframes_csv(dataframes: Dict[str, pd.DataFrame], diretorio_destino
     # Salva cada dataframe em um arquivo CSV separado
     for indice, (key, dataframe) in enumerate(dataframes.items()):
         nome_arquivo = diretorio_destino / f"{indice:02d}-{key}.csv"
-        dataframe.to_csv(nome_arquivo, sep=';', index=False)
+        dataframe.to_csv(nome_arquivo, sep=';', index=False, header=False)

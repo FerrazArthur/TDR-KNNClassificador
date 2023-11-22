@@ -4,6 +4,32 @@ from modelos.dados import Dados
 from sklearn.metrics import ConfusionMatrixDisplay
 import pandas as pd
 import seaborn as sns
+import numpy as np
+
+def imprime_distribuicao_distancias(distancias:pd.Series, ddof:int=0):
+    """
+    Imprime a distribuição das distâncias em um gráfico.
+
+    Args:
+        distancias (pd.Series): Lista com as distâncias.
+        ddof (int, opcional): Graus de liberdade. Padrão é 0.
+    """
+    # Calcula a média e o desvio padrão das distâncias
+    media = distancias.sum() / (distancias.count()-ddof)
+    desvio_padrao = distancias.std(ddof=ddof)
+
+    # Calcula o escore padrão de cada distância
+    z_scores = (distancias - media) / desvio_padrao
+
+    sns.kdeplot(z_scores, fill=True, edgecolor='black', common_norm=True, common_grid=True)
+
+    plt.xlabel('Escore Padrão')
+    plt.ylabel('Densidade')
+    plt.title('Distribuição de Densidade dos Escores Padrão')
+    
+
+    plt.show()
+
 
 def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confusao, relatorio_classificacao, acuracia=None, titulo="", save_fig=False):
     """

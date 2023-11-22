@@ -1,6 +1,9 @@
 from dados.leitura import explorar_dataframe_csv
+from metricas.metricas import obter_vetor_distancias_a_media_dataframe
+
 from pathlib import Path
 from scipy import stats
+import numpy as np
 
 class Dados:
     """
@@ -39,13 +42,13 @@ class Dados:
         # Iterar sobre cada classe e remover o excedente de amostras
         for classe, dataframe in self.dicionario_dados.items():
             if dataframe.shape[0] > min_amostras:
-                # Remover o excedente de amostras
-                self.dicionario_dados[classe] = dataframe.sample(min_amostras)
+                # Remover o excedente de amostras e redefinir os índices
+                self.dicionario_dados[classe] = dataframe.sample(min_amostras).reset_index(drop=True)
 
         # Atualizar o número total de amostras
         self.num_amostras = sum(df.shape[0] for df in self.dicionario_dados.values())
     
-    def remover_outliers(self, limite:int=3):
+    def remover_outliers(self, limite:int=3, ddof:int=1):
         """
         Remove outliers de todos os dataframes no dicionário de dados.
 
@@ -53,6 +56,7 @@ class Dados:
 
         Args:
             limite (int, opcional): Limite para o z-score. Padrão é 3.
+            ddof (int, opcional): Graus de liberdade para o cálculo do desvio padrão. Padrão é 1.
 
         Raises:
             None
@@ -62,18 +66,21 @@ class Dados:
         """
         # Iterar sobre cada classe e remover os outliers
         for classe in self.classes_lista:
+
             # Calcular médias e desvios padrão de cada coluna
-            medias = self.dicionario_dados[classe].mean()
-            desvios_padrao = self.dicionario_dados[classe].std()
+            distancias = obter_vetor_distancias_a_media_dataframe(self.dicionario_dados[classe])
 
-            # Calcular z-scores coluna a coluna
-            z_scores = (self.dicionario_dados[classe] - medias) / desvios_padrao
+            media = distancias.sum() / (distancias.count() - ddof)
+            desvio_padrao = distancias.std(ddof=ddof)
 
-            # Verificar se algum valor na linha excede os limites em sua respectiva coluna
-            linhas_sem_outliers = ((z_scores > -limite) & (z_scores < limite)).all(axis=1)
+            # Calcular z-scores para cada linha
+            z_scores = (distancias - media) / desvio_padrao
+
+            # Verificar se alguma linha excede os limites superior ou inferior de z-score
+            linhas_sem_outliers = (abs(z_scores) < limite)
 
             # Manter apenas as linhas sem outliers no DataFrame
-            self.dicionario_dados[classe] = self.dicionario_dados[classe][linhas_sem_outliers]
+            self.dicionario_dados[classe] = self.dicionario_dados[classe][linhas_sem_outliers].reset_index(drop=True)
 
         # Atualizar o número total de amostras
         self.num_amostras = sum(df.shape[0] for df in self.dicionario_dados.values())

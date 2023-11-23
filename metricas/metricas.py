@@ -146,6 +146,23 @@ def obter_distancia_media_no_dataframe(df: pd.DataFrame, p: int = 2)-> float:
             count+=1
     return distancia_media / (len(df)*(len(df)-1)/2)
 
+def obter_escore_padrao(df:pd.DataFrame, ddof:int=1, p:int=2)-> pd.Series:
+    """
+    Calcula o escore padrão de cada linha de um dataframe.
+
+    Args:
+        df (pd.DataFrame): DataFrame com os dados.
+        ddof (int, opcional): Graus de liberdade. Padrão é 1.
+        p (int, opcional): Ordem da distância de Minkowski. Padrão é 2.
+    
+    Returns:
+        pd.Series: Vetor com os escores padrão.
+    """
+    distancias = obter_vetor_distancias_a_media_dataframe(df, p)
+    media = distancias.mean()
+    desvio_padrao = distancias.std(ddof=ddof)
+    return (distancias - media) / desvio_padrao
+
 def obter_vetor_distancias_a_media_dataframe(df: pd.DataFrame, p: int = 2)-> pd.Series:
     """
     Calcula a distância de Minkowski entre as linhas de um dataframe e a média do dataframe.

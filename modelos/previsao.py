@@ -65,14 +65,18 @@ def obter_resultados(dados:Dados, treino, k_lista:List[int], tamanho_treino_list
             k_resultados.append(pd.Series([obter_acuracia(dados, treino, tamanho_treino, k) for _ in range(repeticoes)]).mean())
         resultados.append(k_resultados)
     return resultados
-def obter_resultados_matriz_confusao(dados:Dados, treino, k_lista:List[int], tamanho_treino_lista:List[int], repeticoes:int=10, titulo:str="", save_fig:bool=False):
+def obter_resultados_matriz_confusao(dados:Dados, treino, k_lista:List[int], tamanho_treino_lista:List[int], repeticoes:int=10,\
+                                      titulo:str="",\
+                                      save_fig:bool=False):
     """
         Obtém os resultados de multiplos testes para as distribuições e valores de k fornecidos e os retorna em uma lista.
     """
     # Realiza o treino do classificador para cada distribuição e para cada valor de k
     for k in k_lista:
         for tamanho_treino in tamanho_treino_lista:
-            obter_matriz_confusao(dados, treino, tamanho_treino, k, repeticoes, titulo="treino="+titulo+"_k="+str(k)+"_tamanhotreino="+str(tamanho_treino), save_fig=save_fig)
+            obter_matriz_confusao(dados, treino, tamanho_treino, k, repeticoes,\
+                                   titulo=titulo+"/k_"+str(k)+"/amostra_treino_"+str(tamanho_treino),\
+                                      save_fig=save_fig)
 
 def executar_multiplos_testes(dados:Dados, k_lista:List[int]=[1, 3],\
  tamanho_treino_lista:List[Union[int, float]]=[0.300], treinos_lista:List[callable]=[treino_regular, treino_media],\
@@ -99,7 +103,8 @@ def executar_multiplos_testes(dados:Dados, k_lista:List[int]=[1, 3],\
 
 def executar_multiplos_testes_matriz_confusao(dados:Dados, k_lista:List[int]=[1, 3],\
      tamanho_treino_lista:List[Union[int, float]]=[0.300], repeticoes:int=10, \
-    treinos_lista:List[callable]=[treino_regular, treino_media], imprime_legenda:bool=True, save_fig:bool=False):
+    treinos_lista:List[callable]=[treino_regular, treino_media], imprime_legenda:bool=True, save_fig:bool=False,
+    fig_folder:str="resultados"):
     """
         Executa testes múltiplos com diferentes valores de k e diferentes distribuições de dados de treino e teste.
     """
@@ -116,6 +121,6 @@ def executar_multiplos_testes_matriz_confusao(dados:Dados, k_lista:List[int]=[1,
     for treino in treinos_lista:
         if (imprime_legenda == True):
             print(f"Treino: {treino.__name__}")
-        obter_resultados_matriz_confusao(dados, treino, k_lista, tamanho_treino_lista_int, repeticoes=repeticoes, titulo=treino.__name__, save_fig=save_fig)
+        obter_resultados_matriz_confusao(dados, treino, k_lista, tamanho_treino_lista_int, repeticoes=repeticoes, titulo=fig_folder+"/"+treino.__name__, save_fig=save_fig)
 
 #------------------------------------------------------------

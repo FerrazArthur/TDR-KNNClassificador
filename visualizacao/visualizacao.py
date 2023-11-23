@@ -5,6 +5,7 @@ from sklearn.metrics import ConfusionMatrixDisplay
 import pandas as pd
 import seaborn as sns
 import numpy as np
+from pathlib import Path
 
 def imprime_distribuicao_distancias(distancias:pd.Series, ddof:int=0):
     """
@@ -42,16 +43,18 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
     cmd = ConfusionMatrixDisplay(confusion_matrix=matriz_confusao, display_labels=dados.classes_lista)
     fig, ax = plt.subplots(figsize=(16,16))
     cmd.plot(values_format=".2g", ax=ax, xticks_rotation=45)
-
+    caminho = Path(titulo)
+    
     if save_fig == True:
-        plt.savefig("figs/matrizconfusao_"+titulo+".png")
+        caminho.mkdir(parents=True, exist_ok=True)
+        plt.savefig(caminho / "matriz_confusao.png")
         plt.close()
     else:
         plt.show()
     
     sns.heatmap(pd.DataFrame(relatorio_classificacao).iloc[:-1, :].T, annot=True)
     if save_fig == True:
-        plt.savefig("figs/relatorioclassificacao_"+titulo+".png")
+        plt.savefig(caminho / "relatorio_classificacao.png")
         plt.close()
     else:
         plt.show()

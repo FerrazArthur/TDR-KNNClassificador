@@ -1,28 +1,30 @@
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 import pandas as pd
-import numpy as np
+from modelos.correlate_pred import ClassificadorCorrelacaoCruzada
 from modelos.conjuntos_dados import treino_media, treino_regular
 from modelos.dados import Dados
 from visualizacao.visualizacao import imprime_matriz_confusao_e_relatorio_classificacao, imprime_testes_multiplos
 from typing import List, Union
 from statistics import mode
 
-def obter_matriz_confusao(dados:Dados, treino, tamanho_treino, k:int=1, repeticoes:int=10, imprime_legenda:bool=True, imprime_acuracia:bool=True, titulo:str="", save_fig:bool=False):
+def obter_matriz_confusao(dados:Dados, divisao_treino, tamanho_treino, k:int=1, repeticoes:int=10, imprime_legenda:bool=True, imprime_acuracia:bool=True, titulo:str="", save_fig:bool=False):
     """
         Realiza o treino do classificador para uma distribuição e para um valor de k
         e imprime a matriz de confusão e o relatório de classificação.
     """
     previsoes_acumuladas = []
 
-    X_train, X_test, y_train, y_test = treino(dados, train_size=tamanho_treino)
-    knn_class = KNeighborsClassifier(n_neighbors=k, weights='distance')
+    X_train, X_test, y_train, y_test = divisao_treino(dados, train_size=tamanho_treino)
+    # knn_class = KNeighborsClassifier(n_neighbors=k, weights='distance')
+    classifier = ClassificadorCorrelacaoCruzada()
+
     for _ in range(repeticoes):
         # Treinando o classificador
-        knn_class.fit(X_train, y_train)
+        classifier.fit(X_train, y_train)
 
         # Realizando o teste
-        previsoes_acumuladas.append(knn_class.predict(X_test))
+        previsoes_acumuladas.append(classifier.predict(X_test))
 
     previsao_media = [mode(preds) for preds in zip(*previsoes_acumuladas)]
 
@@ -65,7 +67,7 @@ def obter_resultados(dados:Dados, treino, k_lista:List[int], tamanho_treino_list
             k_resultados.append(pd.Series([obter_acuracia(dados, treino, tamanho_treino, k) for _ in range(repeticoes)]).mean())
         resultados.append(k_resultados)
     return resultados
-def obter_resultados_matriz_confusao(dados:Dados, treino, k_lista:List[int], tamanho_treino_lista:List[int], repeticoes:int=10,\
+def obter_resultados_matriz_confusao(dados:Dados, divisao_treino, k_lista:List[int], tamanho_treino_lista:List[int], repeticoes:int=10,\
                                       titulo:str="",\
                                       save_fig:bool=False):
     """
@@ -74,7 +76,7 @@ def obter_resultados_matriz_confusao(dados:Dados, treino, k_lista:List[int], tam
     # Realiza o treino do classificador para cada distribuição e para cada valor de k
     for k in k_lista:
         for tamanho_treino in tamanho_treino_lista:
-            obter_matriz_confusao(dados, treino, tamanho_treino, k, repeticoes,\
+            obter_matriz_confusao(dados, divisao_treino, tamanho_treino, k, repeticoes,\
                                    titulo=titulo+"/k_"+str(k)+"/amostra_treino_"+str(tamanho_treino),\
                                       save_fig=save_fig)
 

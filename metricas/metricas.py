@@ -8,34 +8,6 @@ from typing import Tuple, Dict
 import matplotlib.pyplot as plt
 import numpy as np
 
-# def obter_matriz_correlacao_media_entre_dataframe(dados:Dados, p:int=2)-> Dict[str, str]:
-#     """
-#     Calcula e retorna a correlação de Pearson média entre cada dataframe e armazena em um dicionário.
-
-#     Args:
-#         dados (Dados): Dados, Dicionário com os dataframes.
-#         p (int, opcional): Ordem da distância de Minkowski. Padrão é 2.
-#     """
-#     # Cria um DataFrame vazio com os nomes dos DataFrames como índice e colunas
-#     matriz_correlacao = pd.DataFrame(index=dados.keys(), columns=dados.keys())
-
-#     # Percorre o dicionário e calcula a correlação entre os DataFrames
-#     for nome1 in dados.keys():
-#         for nome2 in dados.keys()[2:]:
-#             df1 = dados[nome1]
-#             df2 = dados[nome2]
-#             #correlacao = df1.corrwith(df2, axis=1, method='pearson')
-#             correlacao_out = []
-#             for i in range(len(df1)):
-#                 correlacao_in = []
-#                 for j in range(len(df2)):
-#                     correlacao_in.append(np.corrcoef(df1.iloc[i], df2.iloc[j])[0, 1])
-#                 correlacao_out.append(sum(correlacao_in)/len(correlacao_in))
-#             print (correlacao_out)
-#             exit()
-#             matriz_correlacao.loc[nome1, nome2] = sum(correlacao_out)/len(correlacao_out)
-#     print(matriz_correlacao)
-
 def obter_linha_maior_distancia_minkowski_entre_dataframes(dados:Dict[str, pd.DataFrame], p:int=2)-> Tuple[str, int, float]:
     """
     Calcula e retorna a linha com maior variação entre todos os dataframes.

@@ -130,24 +130,25 @@ def obter_escore_padrao(df:pd.DataFrame, ddof:int=1, p:int=2)-> pd.Series:
     Returns:
         pd.Series: Vetor com os escores padrão.
     """
-    distancias = obter_vetor_distancias_a_media_dataframe(df, p)
+    distancias = obter_vetor_distancias_a_media_dataframe(df.as_numpy(), p)
     media = distancias.mean()
     desvio_padrao = distancias.std(ddof=ddof)
     return (distancias - media) / desvio_padrao
 
-def obter_vetor_distancias_a_media_dataframe(df: pd.DataFrame, p: int = 2)-> pd.Series:
+def obter_vetor_distancias_a_media_dataframe(df: np.array, p: int = 2)-> pd.Series:
     """
     Calcula a distância de Minkowski entre as linhas de um dataframe e a média do dataframe.
-    Calcula a distância entre todas as linhas e faz a média dos resultados. (demorado)
 
     Args:
-        df (pd.DataFrame): DataFrame com os dados.
+        df (np.array(np.array(float))): representação em numpy de um DataFrame pandas com os dados.
         p (int, opcional): Ordem da distância de Minkowski. Padrão é 2.
     
     Returns:
         pd.Series: Vetor com as distâncias
     """
-    vetor_distancias = np.zeros(len(df))
-    for i in range(len(df)):
-        vetor_distancias[i] = minkowski(df.iloc[i], df.mean(), p)
+    sinal_medio = np.mean(df, axis=0)
+    vetor_distancias = np.zeros(np.shape(df)[0])
+
+    for i, linha in df.iterrows():
+        vetor_distancias[i] = minkowski(linha, sinal_medio, p)
     return pd.Series(vetor_distancias)

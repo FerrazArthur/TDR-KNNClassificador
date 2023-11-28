@@ -19,7 +19,8 @@ def treino_regular(dados: Dados, train_size: int, print_table: bool = True):
             amostras.append(row.values)
             nomes.append(codigo)
     
-    X_train, X_test, y_train, y_test = train_test_split(amostras, nomes, train_size=train_size, stratify=nomes)
+    X_train, X_test, y_train, y_test = train_test_split(amostras, nomes, train_size=train_size,\
+                                                         stratify=nomes)
 
     if print_table:
         imprimir_contagem_amostras(y_train, y_test)
@@ -28,7 +29,8 @@ def treino_regular(dados: Dados, train_size: int, print_table: bool = True):
 
 def treino_media(dados: Dados, train_size: int, print_table: bool = True):
     """
-    Retorna um conjunto de treino que contém apenas um exemplo por classe e esse é uma média dos primeiros 'corte' elementos de cada classe.
+    Retorna um conjunto de treino que contém apenas um exemplo por classe e esse é uma média dos
+      primeiros 'corte' elementos de cada classe.
     Retorna o restante como conjunto de testes
     """
     data_dict = dados.dicionario_dados
@@ -44,7 +46,8 @@ def treino_media(dados: Dados, train_size: int, print_table: bool = True):
 
     for key, value in data_dict.items():
         codigo = key
-        treino_temp, teste_temp = train_test_split(value, train_size=train_size_for_class, random_state=random_int)
+        treino_temp, teste_temp = train_test_split(value, train_size=train_size_for_class,\
+                                                    random_state=random_int)
         
         amostras_treino.append(treino_temp.mean().values)
         nomes_treino.append(codigo)

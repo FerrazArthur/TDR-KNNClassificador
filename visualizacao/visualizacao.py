@@ -7,9 +7,26 @@ import seaborn as sns
 import numpy as np
 from pathlib import Path
 
-def imprime_distribuicao_distancias(distancias:pd.Series, ddof:int=0):
+def imprime_distancias(distancias:pd.Series):
     """
-    Imprime a distribuição das distâncias em um gráfico.
+    Imprime as distâncias em um gráfico.
+
+    Args:
+        distancias (pd.Series): Lista com as distâncias.
+    """
+    plt.plot(distancias)
+    
+    plt.xlabel('Amostras')
+    plt.ylabel('Distâncias à média')
+    plt.title('Distância à media por amostra')
+    
+
+    plt.show()
+
+def imprime_distribuicao_padronizada_distancias(distancias:pd.Series, ddof:int=0):
+    """
+    Imprime a distribuição padronizada das distâncias em um gráfico, utilizando
+    o escore padrão.
 
     Args:
         distancias (pd.Series): Lista com as distâncias.

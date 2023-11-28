@@ -103,3 +103,22 @@ class Dados:
                        {self.num_amostras}")
 
             tamanho_anterior = self.num_amostras
+    
+    def reduzir_dimensionalidade(self, extended_slices:int=2):
+        """
+        Reduz a dimensionalidade de todos os dataframes no dicionário de dados.
+
+        A função percorre todas as amostras no dicionário de dados e a substitui por uma subamostra
+        com passo igual a extended_slices.
+
+        Args:
+            extended_slices (int, opcional): Tamanho do passo. Padrão é 2.
+
+        Raises:
+            None
+
+        Returns:
+            None
+        """
+        for chave, amostra in self.dicionario_dados.items():
+            self.dicionario_dados[chave] = amostra.iloc[:, ::extended_slices].dropna(axis=1)

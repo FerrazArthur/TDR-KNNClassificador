@@ -5,12 +5,15 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from scipy.spatial.distance import minkowski
 
 class ClassificadorCorrelacao(BaseEstimator, ClassifierMixin):
+    """
+    Classificador que utiliza a correlação de Pearson entre a média de uma classe, obtida do conjunto de treino,\
+          e a amostra a ser classificada.
+    """
     def __init__(self):
         self.medias_por_classe = {}
 
     def fit(self, X_treino, y_treino):
         X_treino_np = np.array(X_treino)
-        # self.medias_por_classe = {classe: pd.DataFrame(X_treino[y_treino == classe], index=None, columns=None).mean(axis=1) for classe in list(set(y_treino))}
         for classe in list(set(y_treino)):
             mask = [x == classe for x in y_treino]
             self.medias_por_classe[classe] = pd.DataFrame(X_treino_np[mask], index=None, columns=None).mean(axis=0)
@@ -54,8 +57,6 @@ class ClassificadorCorrelacaoCruzada(BaseEstimator, ClassifierMixin):
             X_treino (Array[Array[Float]]): Conjunto de treino.
             y_treino (Array[str]): Classes do conjunto de treino.
         """
-        # self.sinal_medio_por_classe = {classe: pd.DataFrame(X_treino[y_treino == classe],\
-        #              index=None, columns=None).mean(axis=1) for classe in list(set(y_treino))}
         X_treino_np = np.array(X_treino)
         for classe in list(set(y_treino)):
             mask = [(valor == classe) for valor in y_treino]

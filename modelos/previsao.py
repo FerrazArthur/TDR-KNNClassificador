@@ -9,7 +9,7 @@ from typing import List, Union
 from statistics import mode
 
 def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int=1, repeticoes:int=10,\
-         imprime_legenda:bool=True, imprime_acuracia:bool=True, titulo:str="", save_fig:bool=False):
+                               titulo:str="", save_fig:bool=False):
     """
         Realiza o treino do classificador para uma distribuição e para um valor de k
         e imprime a matriz de confusão e o relatório de classificação.
@@ -19,9 +19,6 @@ def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int
             tamanho_treino (int): Tamanho do conjunto de treino.
             k (int, opcional): Número de vizinhos a serem considerados. Padrão é 1.
             repeticoes (int, opcional): Número de repetições de cada teste. Padrão é 10.
-            imprime_legenda (bool, opcional): Se True, imprime o nome do classificador e o tamanho
-            do conjunto de treino. Padrão é True.
-            imprime_acuracia (bool, opcional): Se True, imprime a acurácia do classificador. Padrão é True.
             titulo (str, opcional): Título do gráfico. Padrão é "".
             save_fig (bool, opcional): Se True, salva a figura gerada. Padrão é False.
     """

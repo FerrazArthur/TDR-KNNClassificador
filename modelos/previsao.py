@@ -97,7 +97,7 @@ def executar_multiplas_previsoes_KNN_matriz_confusao(dados:Dados, k_lista:List[i
         if (imprime_legenda == True):
             print(f"Treino: {treino.__name__}")
         obter_resultados_matriz_confusao_KNN(dados, treino, k_lista, tamanho_treino_lista_int,\
-                    repeticoes=repeticoes, titulo=fig_folder+"/"+treino.__name__, save_fig=save_fig)
+                    repeticoes=repeticoes, titulo=fig_folder+"/"+"knn/"+treino.__name__, save_fig=save_fig)
 
 #------------------------------------------------------------
 

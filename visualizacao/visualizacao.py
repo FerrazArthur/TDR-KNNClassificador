@@ -64,7 +64,7 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
     
     if save_fig == True:
         caminho.mkdir(parents=True, exist_ok=True)
-        file_name = str("_".join(caminho.parts)) + "_matriz_confusao.png"
+        file_name = str("_".join(caminho.parts[1:])) + "_matriz_confusao.png"
         plt.savefig(caminho / file_name)
         plt.close()
     else:
@@ -72,7 +72,7 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
     
     sns.heatmap(pd.DataFrame(relatorio_classificacao).iloc[:-1, :].T, annot=True)
     if save_fig == True:
-        file_name = str("_".join(caminho.parts)) + "_relatorio_classificacao.png"
+        file_name = str("_".join(caminho.parts[1:])) + "_relatorio_classificacao.png"
         plt.savefig(caminho / file_name)
         plt.close()
     else:

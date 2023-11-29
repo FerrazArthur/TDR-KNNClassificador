@@ -58,20 +58,22 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
         print("Acurácia:", acuracia)
 
     cmd = ConfusionMatrixDisplay(confusion_matrix=matriz_confusao, display_labels=dados.classes_lista)
-    fig, ax = plt.subplots(figsize=(16,16))
+    _, ax = plt.subplots(figsize=(16,16))
     cmd.plot(values_format=".2g", ax=ax, xticks_rotation=45)
     caminho = Path(titulo)
     
     if save_fig == True:
         caminho.mkdir(parents=True, exist_ok=True)
-        plt.savefig(caminho / "matriz_confusao.png")
+        file_name = str("_".join(caminho.parts)) + "_matriz_confusao.png"
+        plt.savefig(caminho / file_name)
         plt.close()
     else:
         plt.show()
     
     sns.heatmap(pd.DataFrame(relatorio_classificacao).iloc[:-1, :].T, annot=True)
     if save_fig == True:
-        plt.savefig(caminho / "relatorio_classificacao.png")
+        file_name = str("_".join(caminho.parts)) + "_relatorio_classificacao.png"
+        plt.savefig(caminho / file_name)
         plt.close()
     else:
         plt.show()

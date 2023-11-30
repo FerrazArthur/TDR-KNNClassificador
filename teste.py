@@ -5,11 +5,12 @@ from modelos.conjuntos_dados import treino_regular, treino_media
 from modelos.correlate_pred import ClassificadorCorrelacaoCruzada, ClassificadorCorrelacao
 from modelos.dados import Dados
 from dados.escrita import salvar_dataframes_csv
+from pathlib import Path
 
-conjunto1_nome = '1_carga_3_dp'
-conjunto2_nome = '2_cargas_3_dp'
+conjunto1_nome = Path('1_carga_3_dp')
+conjunto2_nome = Path('2_cargas_3_dp')
 corre_cruzada_pasta = "correlacao_cruzada"
-corre_simples_pasta = "1_carga_3_dp/correlacao_simples"
+corre_simples_pasta = "correlacao_simples"
 knn_pasta= "knn"
 
 # conjunto_dados = Dados('2_cargas_3_dp')
@@ -25,11 +26,11 @@ knn_pasta= "knn"
 #executar_multiplas_previsoes_correlacao_matriz_confusao(conjunto_dados, classificador=ClassificadorCorrelacao, tamanho_treino_lista=[32, 480], repeticoes=1, save_fig=True, fig_folder='2_resultados_correlacao')
 # executar_multiplas_previsoes_correlacao_matriz_confusao(conjunto_dados, classificador=ClassificadorCorrelacaoCruzada, tamanho_treino_lista=[32, 480], repeticoes=10, save_fig=True, fig_folder='resultados_correlacao_cruzada')
 conjunto_dados = Dados(conjunto1_nome)
-executar_multiplas_previsoes_correlacao_matriz_confusao(conjunto_dados, classificador=ClassificadorCorrelacao, tamanho_treino_lista=[32, 64, 120, 240, 480], repeticoes=30, save_fig=True, fig_folder=conjunto1_nome + corre_simples_pasta)
-executar_multiplas_previsoes_correlacao_matriz_confusao(conjunto_dados, classificador=ClassificadorCorrelacaoCruzada, tamanho_treino_lista=[32, 64, 120, 240, 480], repeticoes=30, save_fig=True, fig_folder=conjunto1_nome + corre_cruzada_pasta)
+executar_multiplas_previsoes_correlacao_matriz_confusao(conjunto_dados, classificador=ClassificadorCorrelacao, tamanho_treino_lista=[32, 64, 120, 240, 480], repeticoes=30, save_fig=True, fig_folder=conjunto1_nome / corre_simples_pasta)
+executar_multiplas_previsoes_correlacao_matriz_confusao(conjunto_dados, classificador=ClassificadorCorrelacaoCruzada, tamanho_treino_lista=[32, 64, 120, 240, 480], repeticoes=30, save_fig=True, fig_folder=conjunto1_nome / corre_cruzada_pasta)
 executar_multiplas_previsoes_KNN_matriz_confusao(conjunto_dados, [1, 3, 5], [630, 1050, 1260, 1470, 1932], treinos_lista=[treino_regular, treino_media], repeticoes=30, save_fig=True, fig_folder=conjunto1_nome + knn_pasta)
 
 conjunto_dados = Dados(conjunto2_nome)
-executar_multiplas_previsoes_correlacao_matriz_confusao(conjunto_dados, classificador=ClassificadorCorrelacao, tamanho_treino_lista=[630, 1050, 1260, 1470, 1932], repeticoes=30, save_fig=True, fig_folder=conjunto2_nome + corre_simples_pasta)
-executar_multiplas_previsoes_correlacao_matriz_confusao(conjunto_dados, classificador=ClassificadorCorrelacaoCruzada, tamanho_treino_lista=[630, 1050, 1260, 1470, 1932], repeticoes=30, save_fig=True, fig_folder=conjunto2_nome + corre_cruzada_pasta)
-executar_multiplas_previsoes_KNN_matriz_confusao(conjunto_dados, [1, 3, 5], [630, 1050, 1260, 1470, 1932], treinos_lista=[treino_regular, treino_media], repeticoes=30, save_fig=True, fig_folder=conjunto2_nome + knn_pasta)
+executar_multiplas_previsoes_correlacao_matriz_confusao(conjunto_dados, classificador=ClassificadorCorrelacao, tamanho_treino_lista=[630, 1050, 1260, 1470, 1932], repeticoes=30, save_fig=True, fig_folder=conjunto2_nome / corre_simples_pasta)
+executar_multiplas_previsoes_correlacao_matriz_confusao(conjunto_dados, classificador=ClassificadorCorrelacaoCruzada, tamanho_treino_lista=[630, 1050, 1260, 1470, 1932], repeticoes=30, save_fig=True, fig_folder=conjunto2_nome / corre_cruzada_pasta)
+executar_multiplas_previsoes_KNN_matriz_confusao(conjunto_dados, [1, 3, 5], [630, 1050, 1260, 1470, 1932], treinos_lista=[treino_regular, treino_media], repeticoes=30, save_fig=True, fig_folder=conjunto2_nome / knn_pasta)

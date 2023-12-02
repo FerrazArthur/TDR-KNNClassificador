@@ -6,6 +6,8 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 from pathlib import Path
+from metricas.metricas import obter_distancia_minkowski_entre_classes
+from typing import Dict
 
 def imprime_distancias(distancias:pd.Series):
     """
@@ -20,7 +22,6 @@ def imprime_distancias(distancias:pd.Series):
     plt.ylabel('Distâncias à média')
     plt.title('Distância à media por amostra')
     
-
     plt.show()
 
 def imprime_distribuicao_padronizada_distancias(distancias:pd.Series, ddof:int=0):
@@ -44,22 +45,67 @@ def imprime_distribuicao_padronizada_distancias(distancias:pd.Series, ddof:int=0
     plt.xlabel('Escore Padrão')
     plt.ylabel('Densidade')
     plt.title('Distribuição de Densidade dos Escores Padrão')
-    
 
     plt.show()
 
-
-def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confusao, relatorio_classificacao, acuracia=None, titulo="", save_fig=False):
+def imprime_distribuicao_distancias(distancias:pd.DataFrame, save_fig=False, caminho:str=""):
     """
-    Imprime a matriz de confusão e o relatório de classificação em um 
-    gráfico único.
+    Imprime a matriz com a média de todas as distâncias de cada amostra da classe à media(sinal medio) da classe.
+    Args:
+        distancias (pd.DataFrame): Matriz com as distâncias.
+        caminho (str): Caminho para salvar a figura.
+        save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
+    """
+    _, ax = plt.subplots(figsize=(16,16))
+    sns.heatmap(distancias, annot=True, fmt=".3g", cmap="Blues", cbar=False, ax=ax, annot_kws={"size": 14})
+    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=14)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=14)
+    if save_fig == True:
+        caminho = Path(caminho)
+        caminho.mkdir(parents=True, exist_ok=True)
+        file_name = str("_".join(caminho.parts[:])) + "_distribuicao_distancias.png"
+        plt.savefig(caminho / file_name)
+        plt.close()
+    else:
+        plt.show()
+
+def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig=False, caminho:str=""):
+    """
+    Imprime a matriz de distâncias entre as classes em um gráfico.
+
+    Args:
+        matriz_distancias (Dict[str, str]): Matriz de distâncias entre as classes.
+        caminho (str): Caminho para salvar a figura.
+        save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
+    """
+    _, ax = plt.subplots(figsize=(16,16))
+    sns.heatmap(pd.DataFrame(matriz_distancias).astype(float), annot=True, fmt=".2g", cmap="Blues", cbar=False, ax=ax, annot_kws={"size": 13})
+    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=14)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=90, fontsize=14)
+
+    if save_fig == True:
+        caminho = Path(caminho)
+        caminho.mkdir(parents=True, exist_ok=True)
+        file_name = str("_".join(caminho.parts[:])) + "_matriz_distancias_classes.png"
+        plt.savefig(caminho / file_name)
+        plt.close()
+    else:
+        plt.show()
+
+def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confusao, \
+                                    relatorio_classificacao, acuracia=None, titulo="", save_fig=False):
+    """
+    Imprime a matriz de confusão e o relatório de classificação em um gráfico único.
     """
     if acuracia is not None:
         print("Acurácia:", acuracia)
-
+    
     cmd = ConfusionMatrixDisplay(confusion_matrix=matriz_confusao, display_labels=dados.classes_lista)
     _, ax = plt.subplots(figsize=(16,16))
-    cmd.plot(values_format=".2g", ax=ax, xticks_rotation=45)
+    cmd.plot(values_format=".3g", ax=ax, cmap="Blues")
+    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=14)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=90, fontsize=14)
+    
     caminho = Path(titulo)
     
     if save_fig == True:
@@ -69,8 +115,20 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
         plt.close()
     else:
         plt.show()
-    
-    sns.heatmap(pd.DataFrame(relatorio_classificacao).iloc[:-1, :].T, annot=True)
+
+    # Remove a linha 'weighted avg' do relatório de classificação
+    relatorio_classificacao.pop('accuracy')
+    # Remove a coluna f1-score
+    for chave, _ in relatorio_classificacao.items():
+        try:
+            relatorio_classificacao[chave].pop('f1-score')
+        except:
+            pass
+
+    _, ax = plt.subplots(figsize=(16,16))
+    sns.heatmap(pd.DataFrame(relatorio_classificacao).iloc[:, :].T, annot=True, fmt=".5g", cmap="Blues", cbar=False, ax=ax, annot_kws={"size": 14})
+    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=14)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=14)
     if save_fig == True:
         file_name = str("_".join(caminho.parts[1:])) + "_relatorio_classificacao.png"
         plt.savefig(caminho / file_name)

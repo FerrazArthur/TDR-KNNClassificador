@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from modelos.dados import Dados
 from visualizacao.visualizacao import imprimir_contagem_amostras
 
-def treino_regular(dados: Dados, train_size: int, print_table: bool = True):
+def treino_regular(dados: Dados, train_size: int, print_table: bool = False):
     """
     Retorna a saída do método regular de divisão de amostras do scipy em treino e teste.
     """
@@ -27,7 +27,7 @@ def treino_regular(dados: Dados, train_size: int, print_table: bool = True):
     
     return X_train, X_test, y_train, y_test
 
-def treino_media(dados: Dados, train_size: int, print_table: bool = True):
+def treino_media(dados: Dados, train_size: int, print_table: bool = False):
     """
     Retorna um conjunto de treino que contém apenas um exemplo por classe e esse é uma média dos
       primeiros 'corte' elementos de cada classe.

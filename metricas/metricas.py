@@ -37,44 +37,10 @@ def obter_linha_maior_distancia_minkowski_entre_dataframes(dados:Dict[str, pd.Da
                 linha_maior_variacao = i
     return nome_classe, linha_maior_variacao, maior_variacao
 
-def obter_distancia_media_minkowski_entre_dataframe(dados:Dict[str, pd.DataFrame], p:int=2)-> Dict[str, str]:
+def obter_distancia_minkowski_entre_classes(dados:Dict[str, pd.DataFrame], p:int=2)-> Dict[str, str]:
     """
-    Calcula e retorna a distância euclidiana média entre cada dataframe e armazena em um dicionário.
-    Utiliza a média do primeiro para calcular a distancia à todas as linhas do segundo e faz uma média dos resultados.
-    Args:
-        dados (pd.DataFrame): Dicionário com os dataframes.
-        p (int, opcional): Ordem da distância de Minkowski. Padrão é 2.
-    
-    Returns:
-        Dict[str, str]: Dicionário com a distância média entre cada dataframe.
-    """
-    # Cria um DataFrame vazio com os nomes dos DataFrames como índice e colunas
-    matriz_distancia = pd.DataFrame(index=dados.keys(), columns=dados.keys())
-
-    # Percorre o dicionário e calcula a distância de Minkowski entre os DataFrames
-    combinacoes_classes = combinations(dados.keys(), 2)
-    for nome1, nome2 in combinacoes_classes:
-        df1 = dados[nome1]
-        df2 = dados[nome2]
-        # Cria uma lista com todas as combinações de linhas entre os dois DataFrames
-        combinacoes_linhas = list(combinations(df1.index, r=2))
-        distancia_raw = []
-        for comb in combinacoes_linhas:
-            # Calcula a distância entre as duas linhas
-            distancia_raw.append(minkowski(df1.loc[comb[0]], df2.loc[comb[1]], p))
-        
-        # Calcula a média das distâncias
-        matriz_distancia.loc[nome1, nome2] = np.mean(distancia_raw)
-        matriz_distancia.loc[nome2, nome1] = np.mean(distancia_raw)
-    # Para representar a distância entre um DataFrame e ele mesmo, calcula a distância entre a média de suas linhas
-    for nome in dados.keys():
-        matriz_distancia.loc[nome, nome] = minkowski(dados[nome].mean(), dados[nome].mean(), p)
-    print(matriz_distancia)
-
-def obter_distancia_media_minkowski_entre_media_dataframe(dados:Dict[str, pd.DataFrame], p:int=2)-> Dict[str, str]:
-    """
-    Calcula e retorna a distância euclidiana média entre as médias de cada dataframe e armazena em um dicionário.
-    Utiliza a média do primeiro para calcular a distancia à media do segundo. (mais rápido)
+    Calcula e retorna a distância euclidiana entre as médias de cada dataframe e armazena em um dicionário.
+    Utiliza a média do primeiro conjunto de amostras para calcular a distancia à media do segundo.
     Args:
         dados (pd.DataFrame): Dicionário com os dataframes.
         p (int, opcional): Ordem da distância de Minkowski. Padrão é 2.
@@ -91,32 +57,61 @@ def obter_distancia_media_minkowski_entre_media_dataframe(dados:Dict[str, pd.Dat
         df1 = dados[nome1]
         df2 = dados[nome2]
 
-        matriz_distancia.loc[nome1, nome2] = minkowski(df1.mean(), df2.mean(), p)
+        matriz_distancia.loc[nome1, nome2] = minkowski(df1.mean().to_numpy(), df2.mean().to_numpy(), p)
         matriz_distancia.loc[nome2, nome1] = matriz_distancia.loc[nome1, nome2]
     # Para representar a distância entre um DataFrame e ele mesmo, calcula a distância entre a média de suas linhas
     for nome in dados.keys():
-        matriz_distancia.loc[nome, nome] = minkowski(dados[nome].mean(), dados[nome].mean(), p)
-    print(matriz_distancia.to_string())
+        matriz_distancia.loc[nome, nome] = 0.0
+    return matriz_distancia
 
-def obter_distancia_media_no_dataframe(df: pd.DataFrame, p: int = 2)-> float:
+def obter_distancia_minkowski_min_mean_max_em_classes(dados:Dict[str, pd.DataFrame], p:int=2)-> pd.DataFrame:
     """
-    Calcula a média da distância de Minkowski entre as linhas de um dataframe.
-    Calcula a distância entre todas as linhas e faz a média dos resultados. (demorado)
-
+    Calcula e retorna a distância euclidiana minima, media e máxima entre cada amostra de uma classe e sua média.
     Args:
-        df (pd.DataFrame): DataFrame com os dados.
+        dados (pd.DataFrame): Dicionário com os dataframes.
         p (int, opcional): Ordem da distância de Minkowski. Padrão é 2.
-    
-    Returns:
-        float: Distância média.
     """
-    distancia_media = 0
-    count = 0
-    for i in range(len(df)):
-        for j in range(i+1, len(df)):
-            distancia_media += minkowski(df.iloc[i], df.iloc[j], p)
-            count+=1
-    return distancia_media / (len(df)*(len(df)-1)/2)
+    # Cria um DataFrame vazio com os nomes dos DataFrames como índice e as colunas
+    matriz_distancia = pd.DataFrame(index=dados.keys(), columns=['distancia_minima', 'distancia_media' , 'distancia_maxima'], dtype=float)
+
+    # Percorre o dicionário e calcula a distância de Minkowski entre os DataFrames
+    for nome, df in dados.items():
+        distancias = obter_vetor_distancias_a_media_dataframe(df, p)
+        maximo = max(distancias)
+        mean = distancias.mean()
+        minimo = min(distancias)
+
+        matriz_distancia.loc[nome, 'distancia_maxima'] = maximo
+        matriz_distancia.loc[nome, 'distancia_media'] = mean
+        matriz_distancia.loc[nome, 'distancia_minima'] = minimo
+
+    return matriz_distancia
+
+# Não usar. Não faz sentido calcular correlação entre médias de classes porque da valores muito pertos de 1, mesmo depois de filtrar com
+# Autocorrelação
+# def obter_correlecao_entre_classes(dados:Dict[str, pd.DataFrame])-> Dict[str, str]:
+#     """
+#     Calcula e retorna a correlação entre as médias de cada dataframe e armazena em um dicionário.
+#     Utiliza a média do primeiro conjunto de amostras para calcular a correlação com a media do segundo.
+#     Args:
+#         dados (pd.DataFrame): Dicionário com os dataframes.
+#     """
+#     # Cria um DataFrame vazio com os nomes dos DataFrames como índice e colunas
+#     matriz_correlacao = pd.DataFrame(index=dados.keys(), columns=dados.keys())
+
+#     # Percorre o dicionário e calcula a correlação entre os DataFrames
+#     combinacoes_classes = combinations(dados.keys(), 2)
+#     for nome1, nome2 in combinacoes_classes:
+#         df1 = dados[nome1]
+#         df2 = dados[nome2]
+#         autocorr_df1 = pd.Series(np.correlate(df1.mean().to_numpy(), df1.mean().to_numpy(), mode='full'), index=None)
+#         autocorr_df2 = pd.Series(np.correlate(df2.mean().to_numpy(), df2.mean().to_numpy(), mode='full'), index=None)
+#         matriz_correlacao.loc[nome1, nome2] = autocorr_df1.corr(autocorr_df2, method='pearson')
+#         matriz_correlacao.loc[nome2, nome1] = matriz_correlacao.loc[nome1, nome2]
+#     # Para representar a correlação entre um DataFrame e ele mesmo, calcula a correlação entre a média de suas linhas
+#     for nome in dados.keys():
+#         matriz_correlacao.loc[nome, nome] = 1.0
+#     return matriz_correlacao
 
 def obter_escore_padrao(df:pd.DataFrame, ddof:int=1, p:int=2)-> pd.Series:
     """
@@ -130,17 +125,17 @@ def obter_escore_padrao(df:pd.DataFrame, ddof:int=1, p:int=2)-> pd.Series:
     Returns:
         pd.Series: Vetor com os escores padrão.
     """
-    distancias = obter_vetor_distancias_a_media_dataframe(df.as_numpy(), p)
+    distancias = obter_vetor_distancias_a_media_dataframe(df, p)
     media = distancias.mean()
     desvio_padrao = distancias.std(ddof=ddof)
     return (distancias - media) / desvio_padrao
 
-def obter_vetor_distancias_a_media_dataframe(df: np.array, p: int = 2)-> pd.Series:
+def obter_vetor_distancias_a_media_dataframe(df: pd.DataFrame, p: int = 2)-> pd.Series:
     """
     Calcula a distância de Minkowski entre as linhas de um dataframe e a média do dataframe.
 
     Args:
-        df (np.array(np.array(float))): representação em numpy de um DataFrame pandas com os dados.
+        df pd.Dataframe: um DataFrame pandas com os dados.
         p (int, opcional): Ordem da distância de Minkowski. Padrão é 2.
     
     Returns:

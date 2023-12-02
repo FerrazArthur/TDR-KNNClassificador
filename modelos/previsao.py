@@ -7,6 +7,9 @@ from modelos.dados import Dados
 from visualizacao.visualizacao import imprime_matriz_confusao_e_relatorio_classificacao
 from typing import List, Union
 from statistics import mode
+from pathlib import Path
+import tracemalloc
+import time
 
 def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int=1, repeticoes:int=10,\
                                titulo:str="", save_fig:bool=False):
@@ -22,6 +25,9 @@ def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int
             titulo (str, opcional): Título do gráfico. Padrão é "".
             save_fig (bool, opcional): Se True, salva a figura gerada. Padrão é False.
     """
+    # tracemalloc.start()
+    # start_time = time.time()
+
     previsoes_acumuladas = []
 
     X_train, X_test, y_train, y_test = divisao_treino(dados, train_size=tamanho_treino)
@@ -34,13 +40,21 @@ def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int
         # Realizando o teste
         previsoes_acumuladas.append(knn_class.predict(X_test))
 
-    previsao_media = [mode(preds) for preds in zip(*previsoes_acumuladas)]
+    previsao_moda = [mode(preds) for preds in zip(*previsoes_acumuladas)]
 
-    mat_confusao = confusion_matrix(y_test, previsao_media, normalize='true')
-    rel_classificacao = classification_report(y_test, previsao_media, output_dict=True)
-
+    mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
+    rel_classificacao = classification_report(y_test, previsao_moda, output_dict=True)
+    
     imprime_matriz_confusao_e_relatorio_classificacao(dados, mat_confusao, rel_classificacao,\
                                                        titulo=titulo, save_fig=save_fig)
+    
+    # end_time = time.time()
+    # elapsed_time = end_time - start_time
+
+    # current, peak = tracemalloc.get_traced_memory()
+    # print(f"Tempo de execução: {elapsed_time} segundos")
+    # print(f"Custo em memória: {current / 10**6} MB")
+    # print(f"Pico de memória: {peak / 10**6} MB")
 
 def obter_resultados_matriz_confusao_KNN(dados:Dados, divisao_treino, k_lista:List[int],\
             tamanho_treino_lista:List[int], repeticoes:int=10, titulo:str="", save_fig:bool=False):
@@ -58,9 +72,11 @@ def obter_resultados_matriz_confusao_KNN(dados:Dados, divisao_treino, k_lista:Li
     """
     # Realiza o treino do classificador para cada distribuição e para cada valor de k
     for k in k_lista:
+        print(f"k = {k}")
         for tamanho_treino in tamanho_treino_lista:
+            print(f"Amostra de treino = {tamanho_treino}")
             obter_matriz_confusao_KNN(dados, divisao_treino, tamanho_treino, k, repeticoes,\
-                                   titulo=titulo+"/k_"+str(k)+"/amostra_treino_"+str(tamanho_treino),\
+                                   titulo=str(Path(titulo) / f"k-{k}" / f"n-{tamanho_treino}"),\
                                       save_fig=save_fig)
 
 def executar_multiplas_previsoes_KNN_matriz_confusao(dados:Dados, k_lista:List[int]=[1, 3],\
@@ -97,7 +113,7 @@ def executar_multiplas_previsoes_KNN_matriz_confusao(dados:Dados, k_lista:List[i
         if (imprime_legenda == True):
             print(f"Treino: {treino.__name__}")
         obter_resultados_matriz_confusao_KNN(dados, treino, k_lista, tamanho_treino_lista_int,\
-                    repeticoes=repeticoes, titulo=fig_folder+"/"+"knn/"+treino.__name__, save_fig=save_fig)
+                    repeticoes=repeticoes, titulo=str(Path(fig_folder) /treino.__name__), save_fig=save_fig)
 
 #------------------------------------------------------------
 
@@ -114,6 +130,8 @@ def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, tamanh
             titulo (str, opcional): Título do gráfico. Padrão é "".
             save_fig (bool, opcional): Se True, salva a figura gerada. Padrão é False.
     """
+    # tracemalloc.start()
+    # start_time = time.time()
     previsoes_acumuladas = []
 
     X_train, X_test, y_train, y_test = treino_regular(dados, train_size=tamanho_treino)
@@ -127,13 +145,21 @@ def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, tamanh
         # Realizando o teste
         previsoes_acumuladas.append(classificador_instancia.predict(X_test))
 
-    previsao_media = [mode(preds) for preds in zip(*previsoes_acumuladas)]
+    previsao_moda = [mode(preds) for preds in zip(*previsoes_acumuladas)]
 
-    mat_confusao = confusion_matrix(y_test, previsao_media, normalize='true')
-    rel_classificacao = classification_report(y_test, previsao_media, output_dict=True)
+    mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
+    rel_classificacao = classification_report(y_test, previsao_moda, output_dict=True)
 
     imprime_matriz_confusao_e_relatorio_classificacao(dados, mat_confusao, rel_classificacao,\
                                                        titulo=titulo, save_fig=save_fig)
+    
+    # end_time = time.time()
+    # elapsed_time = end_time - start_time
+
+    # current, peak = tracemalloc.get_traced_memory()
+    # print(f"Tempo de execução: {elapsed_time} segundos")
+    # print(f"Custo em memória: {current / 10**6} MB")
+    # print(f"Pico de memória: {peak / 10**6} MB")
 
 def obter_resultados_matriz_confusao_correlacao(dados:Dados, classificador:callable, \
             tamanho_treino_lista:List[int], repeticoes:int=10, titulo:str="", save_fig:bool=False):
@@ -150,8 +176,9 @@ def obter_resultados_matriz_confusao_correlacao(dados:Dados, classificador:calla
     """
 
     for tamanho_treino in tamanho_treino_lista:
+        print(f"Amostra de treino = {tamanho_treino}")
         obter_matriz_confusao_correlacao(dados, classificador, tamanho_treino, repeticoes,\
-                                titulo=titulo+"/amostra_treino_"+str(tamanho_treino),\
+                                titulo=str(Path(titulo) / f"n-{tamanho_treino}"),\
                                     save_fig=save_fig)
             
 def executar_multiplas_previsoes_correlacao_matriz_confusao(dados:Dados, classificador:callable,\
@@ -181,6 +208,6 @@ def executar_multiplas_previsoes_correlacao_matriz_confusao(dados:Dados, classif
             tamanho_treino_lista_int.append(round(tamanho_treino))
 
     if (imprime_legenda == True):
-        print(f"Classificador: {classificador.__class__.__name__}")
+        print(f"Classificador: {classificador.__name__}")
     obter_resultados_matriz_confusao_correlacao(dados, classificador, tamanho_treino_lista_int,\
              repeticoes=repeticoes, titulo=fig_folder, save_fig=save_fig)

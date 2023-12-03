@@ -25,13 +25,14 @@ def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int
             titulo (str, opcional): Título do gráfico. Padrão é "".
             save_fig (bool, opcional): Se True, salva a figura gerada. Padrão é False.
     """
-    # tracemalloc.start()
-    # start_time = time.time()
+    tracemalloc.start()
+    start_time = time.time()
 
     previsoes_acumuladas = []
 
     X_train, X_test, y_train, y_test = divisao_treino(dados, train_size=tamanho_treino)
-    knn_class = KNeighborsClassifier(n_neighbors=k, weights='distance')
+
+    knn_class = KNeighborsClassifier(n_neighbors=k, weights='distance', algorithm='brute')
 
     for _ in range(repeticoes):
         # Treinando o classificador
@@ -42,19 +43,19 @@ def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int
 
     previsao_moda = [mode(preds) for preds in zip(*previsoes_acumuladas)]
 
-    mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
-    rel_classificacao = classification_report(y_test, previsao_moda, output_dict=True)
+    # mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
+    # rel_classificacao = classification_report(y_test, previsao_moda, output_dict=True)
     
-    imprime_matriz_confusao_e_relatorio_classificacao(dados, mat_confusao, rel_classificacao,\
-                                                       titulo=titulo, save_fig=save_fig)
-    
-    # end_time = time.time()
-    # elapsed_time = end_time - start_time
+    # imprime_matriz_confusao_e_relatorio_classificacao(dados, mat_confusao, rel_classificacao,\
+    #                                                titulo=titulo, save_fig=save_fig)
 
-    # current, peak = tracemalloc.get_traced_memory()
-    # print(f"Tempo de execução: {elapsed_time} segundos")
-    # print(f"Custo em memória: {current / 10**6} MB")
-    # print(f"Pico de memória: {peak / 10**6} MB")
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+
+    current, peak = tracemalloc.get_traced_memory()
+    print(f"Tempo de execução: {elapsed_time:.4f} segundos")
+    print(f"Custo em memória: {current / 10**6:.4f} MB")
+    print(f"Pico de memória: {peak / 10**6:.4f} MB")
 
 def obter_resultados_matriz_confusao_KNN(dados:Dados, divisao_treino, k_lista:List[int],\
             tamanho_treino_lista:List[int], repeticoes:int=10, titulo:str="", save_fig:bool=False):
@@ -130,8 +131,8 @@ def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, tamanh
             titulo (str, opcional): Título do gráfico. Padrão é "".
             save_fig (bool, opcional): Se True, salva a figura gerada. Padrão é False.
     """
-    # tracemalloc.start()
-    # start_time = time.time()
+    tracemalloc.start()
+    start_time = time.time()
     previsoes_acumuladas = []
 
     X_train, X_test, y_train, y_test = treino_regular(dados, train_size=tamanho_treino)
@@ -147,19 +148,19 @@ def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, tamanh
 
     previsao_moda = [mode(preds) for preds in zip(*previsoes_acumuladas)]
 
-    mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
-    rel_classificacao = classification_report(y_test, previsao_moda, output_dict=True)
+    # mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
+    # rel_classificacao = classification_report(y_test, previsao_moda, output_dict=True)
 
-    imprime_matriz_confusao_e_relatorio_classificacao(dados, mat_confusao, rel_classificacao,\
-                                                       titulo=titulo, save_fig=save_fig)
+    # imprime_matriz_confusao_e_relatorio_classificacao(dados, mat_confusao, rel_classificacao,\
+    #                                                    titulo=titulo, save_fig=save_fig)
     
-    # end_time = time.time()
-    # elapsed_time = end_time - start_time
+    end_time = time.time()
+    elapsed_time = end_time - start_time
 
-    # current, peak = tracemalloc.get_traced_memory()
-    # print(f"Tempo de execução: {elapsed_time} segundos")
-    # print(f"Custo em memória: {current / 10**6} MB")
-    # print(f"Pico de memória: {peak / 10**6} MB")
+    current, peak = tracemalloc.get_traced_memory()
+    print(f"Tempo de execução: {elapsed_time} segundos")
+    print(f"Custo em memória: {current / 10**6} MB")
+    print(f"Pico de memória: {peak / 10**6} MB")
 
 def obter_resultados_matriz_confusao_correlacao(dados:Dados, classificador:callable, \
             tamanho_treino_lista:List[int], repeticoes:int=10, titulo:str="", save_fig:bool=False):

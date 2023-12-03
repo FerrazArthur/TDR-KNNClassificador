@@ -67,6 +67,7 @@ def obter_distancia_minkowski_entre_classes(dados:Dict[str, pd.DataFrame], p:int
 def obter_distancia_minkowski_min_mean_max_em_classes(dados:Dict[str, pd.DataFrame], p:int=2)-> pd.DataFrame:
     """
     Calcula e retorna a distância euclidiana minima, media e máxima entre cada amostra de uma classe e sua média.
+    Também adiciona o desvio padrão das distâncias.
     Args:
         dados (pd.DataFrame): Dicionário com os dataframes.
         p (int, opcional): Ordem da distância de Minkowski. Padrão é 2.
@@ -80,10 +81,12 @@ def obter_distancia_minkowski_min_mean_max_em_classes(dados:Dict[str, pd.DataFra
         maximo = max(distancias)
         mean = distancias.mean()
         minimo = min(distancias)
+        desvio_padrao = distancias.std()
 
         matriz_distancia.loc[nome, 'distancia_maxima'] = maximo
         matriz_distancia.loc[nome, 'distancia_media'] = mean
         matriz_distancia.loc[nome, 'distancia_minima'] = minimo
+        matriz_distancia.loc[nome, 'desvio_padrao'] = desvio_padrao
 
     return matriz_distancia
 

@@ -50,7 +50,8 @@ def imprime_distribuicao_padronizada_distancias(distancias:pd.Series, ddof:int=0
 
 def imprime_distribuicao_distancias(distancias:pd.DataFrame, save_fig=False, caminho:str=""):
     """
-    Imprime a matriz com a média de todas as distâncias de cada amostra da classe à media(sinal medio) da classe.
+    Imprime a matriz com a média de todas as distâncias de cada amostra da classe à media(sinal medio)
+      da classe.
     Args:
         distancias (pd.DataFrame): Matriz com as distâncias.
         caminho (str): Caminho para salvar a figura.
@@ -63,8 +64,8 @@ def imprime_distribuicao_distancias(distancias:pd.DataFrame, save_fig=False, cam
     if save_fig == True:
         caminho = Path(caminho)
         caminho.mkdir(parents=True, exist_ok=True)
-        file_name = str("_".join(caminho.parts[:])) + "_distribuicao_distancias.png"
-        plt.savefig(caminho / file_name)
+        file_name = str("_".join(caminho.parts[:])) + "_distribuicao_distancias.pdf"
+        plt.savefig(caminho / file_name, format="pdf")
         plt.close()
     else:
         plt.show()
@@ -79,15 +80,16 @@ def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig
         save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
     """
     _, ax = plt.subplots(figsize=(16,16))
-    sns.heatmap(pd.DataFrame(matriz_distancias).astype(float), annot=True, fmt=".2g", cmap="Blues", cbar=False, ax=ax, annot_kws={"size": 13})
+    sns.heatmap(pd.DataFrame(matriz_distancias).astype(float), annot=True, fmt=".2g", cmap="Blues", \
+                cbar=False, ax=ax, annot_kws={"size": 13})
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=14)
     ax.set_xticklabels(ax.get_xticklabels(), rotation=90, fontsize=14)
 
     if save_fig == True:
         caminho = Path(caminho)
         caminho.mkdir(parents=True, exist_ok=True)
-        file_name = str("_".join(caminho.parts[:])) + "_matriz_distancias_classes.png"
-        plt.savefig(caminho / file_name)
+        file_name = str("_".join(caminho.parts[:])) + "_matriz_distancias_classes.pdf"
+        plt.savefig(caminho / file_name, format="pdf")
         plt.close()
     else:
         plt.show()
@@ -110,8 +112,8 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
     
     if save_fig == True:
         caminho.mkdir(parents=True, exist_ok=True)
-        file_name = str("_".join(caminho.parts[1:])) + "_matriz_confusao.png"
-        plt.savefig(caminho / file_name)
+        file_name = str("_".join(caminho.parts[1:])) + "_matriz_confusao.pdf"
+        plt.savefig(caminho / file_name, format="pdf")
         plt.close()
     else:
         plt.show()
@@ -126,12 +128,13 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
             pass
 
     _, ax = plt.subplots(figsize=(16,16))
-    sns.heatmap(pd.DataFrame(relatorio_classificacao).iloc[:, :].T, annot=True, fmt=".5g", cmap="Blues", cbar=False, ax=ax, annot_kws={"size": 14})
+    sns.heatmap(pd.DataFrame(relatorio_classificacao).iloc[:, :].T, annot=True, fmt=".5g", cmap="Blues",\
+                 cbar=False, ax=ax, annot_kws={"size": 14})
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=14)
     ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=14)
     if save_fig == True:
-        file_name = str("_".join(caminho.parts[1:])) + "_relatorio_classificacao.png"
-        plt.savefig(caminho / file_name)
+        file_name = str("_".join(caminho.parts[1:])) + "_relatorio_classificacao.pdf"
+        plt.savefig(caminho / file_name, format="pdf")
         plt.close()
     else:
         plt.show()

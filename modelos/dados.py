@@ -13,9 +13,9 @@ class Dados:
     num_classes: número de classes.
     num_amostras: número total de amostras.
     """
-    def __init__(self, caminho:Path):
+    def __init__(self, caminho:Path, base_codigo:int=0):
         self.dicionario_dados = explorar_dataframe_csv(caminho)
-        self.legenda = {classe: i for i, classe in enumerate(self.dicionario_dados.keys())}
+        self.legenda = {classe: i+base_codigo for i, classe in enumerate(self.dicionario_dados.keys())}
         self.classes_lista = list(self.dicionario_dados.keys())
         self.num_classes = len(self.legenda)
         self.num_amostras = sum(df.shape[0] for df in self.dicionario_dados.values())

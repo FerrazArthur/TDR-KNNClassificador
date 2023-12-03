@@ -57,20 +57,24 @@ def imprime_distribuicao_distancias(distancias:pd.DataFrame, save_fig=False, cam
         caminho (str): Caminho para salvar a figura.
         save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
     """
-    _, ax = plt.subplots(figsize=(16,16))
-    sns.heatmap(distancias, annot=True, fmt=".3g", cmap="Blues", cbar=False, ax=ax, annot_kws={"size": 14})
-    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=14)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=14)
+    # Tamanho da imagem em polegadas
+    largura_polegadas = 160 / 50.8
+    altura_polegadas = 247 / 50.8
+    fig, ax = plt.subplots(figsize=(largura_polegadas, altura_polegadas))
+    sns.heatmap(distancias, annot=True, fmt=".3g", cmap="Blues", cbar=False, ax=ax, annot_kws={"size": 7})
+    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=6)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=6)
+    fig.tight_layout()
     if save_fig == True:
         caminho = Path(caminho)
         caminho.mkdir(parents=True, exist_ok=True)
         file_name = str("_".join(caminho.parts[:])) + "_distribuicao_distancias.pdf"
-        plt.savefig(caminho / file_name, format="pdf")
+        plt.savefig(caminho / file_name, format="pdf", dpi=300)
         plt.close()
     else:
         plt.show()
 
-def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig=False, caminho:str=""):
+def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig=False, caminho:str="", legendas:Dict[str, int]=None):
     """
     Imprime a matriz de distâncias entre as classes em um gráfico.
 
@@ -78,42 +82,71 @@ def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig
         matriz_distancias (Dict[str, str]): Matriz de distâncias entre as classes.
         caminho (str): Caminho para salvar a figura.
         save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
+        legendas (Dict[str, int], opcional): Dicionário com as legendas das classes. Padrão é None.
     """
-    _, ax = plt.subplots(figsize=(16,16))
+    # Tamanho da imagem em polegadas
+    largura_polegadas = 160 / 50.8
+    fig, ax = plt.subplots(figsize=(largura_polegadas, largura_polegadas))
     sns.heatmap(pd.DataFrame(matriz_distancias).astype(float), annot=True, fmt=".2g", cmap="Blues", \
-                cbar=False, ax=ax, annot_kws={"size": 13})
-    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=14)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=90, fontsize=14)
+                cbar=False, ax=ax, annot_kws={"size": 4})
+    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=4)
+    if legendas is not None:
+        ax.set_xticklabels([legendas[label.get_text()] for label in ax.get_xticklabels()], rotation=0, fontsize=4)
+    else:
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=-90, fontsize=4)
+    fig.tight_layout()
 
     if save_fig == True:
         caminho = Path(caminho)
         caminho.mkdir(parents=True, exist_ok=True)
         file_name = str("_".join(caminho.parts[:])) + "_matriz_distancias_classes.pdf"
-        plt.savefig(caminho / file_name, format="pdf")
+        plt.savefig(caminho / file_name, format="pdf", dpi=300)
         plt.close()
     else:
         plt.show()
 
 def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confusao, \
-                                    relatorio_classificacao, acuracia=None, titulo="", save_fig=False):
+                                    relatorio_classificacao, titulo="", save_fig=False):
     """
     Imprime a matriz de confusão e o relatório de classificação em um gráfico único.
+    Args:
+        dados (Dados): Dados do conjunto de dados.
+        matriz_confusao (np.ndarray): Matriz de confusão.
+        relatorio_classificacao (Dict): Relatório de classificação.
+        titulo (str, opcional): Título do gráfico. Padrão é "".
+        save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
     """
-    if acuracia is not None:
-        print("Acurácia:", acuracia)
-    
+    # Tamanho da imagem em polegadas
+    largura_polegadas = 160 / 50.8
+
     cmd = ConfusionMatrixDisplay(confusion_matrix=matriz_confusao, display_labels=dados.classes_lista)
-    _, ax = plt.subplots(figsize=(16,16))
-    cmd.plot(values_format=".3g", ax=ax, cmap="Blues")
-    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=14)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=90, fontsize=14)
-    
+    fig, ax = plt.subplots(figsize=(largura_polegadas, largura_polegadas))
+    cmd.plot(values_format=".3g", ax=ax, cmap="Blues", colorbar=False)
+    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=4)
+    ax.set_xticklabels([dados.legenda[label.get_text()] for label in ax.get_xticklabels()], rotation=0, fontsize=4)
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    # Adjusting font size for the text inside cells
+    for text in ax.texts:
+        current_text = text.get_text()
+        # Se current_text tiver mais que 2 casas decimais, arredonde pra 2 casas decimais
+        if len(current_text) > 2:
+            # Se current text for menor que 0.01, substitua por '-'
+            if float(current_text) < 0.01:
+                current_text = '*'
+            else:
+                current_text = round(float(current_text), 2)
+        formatted_text = f"{current_text}"  # Format the text to .3f
+        text.set_text(formatted_text)
+        text.set_fontsize(3)  # Adjust the font size as needed
+    fig.tight_layout()
+
     caminho = Path(titulo)
     
     if save_fig == True:
         caminho.mkdir(parents=True, exist_ok=True)
         file_name = str("_".join(caminho.parts[1:])) + "_matriz_confusao.pdf"
-        plt.savefig(caminho / file_name, format="pdf")
+        plt.savefig(caminho / file_name, format="pdf", dpi=300)
         plt.close()
     else:
         plt.show()
@@ -127,14 +160,20 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
         except:
             pass
 
-    _, ax = plt.subplots(figsize=(16,16))
+    # Tamanho da imagem em polegadas
+    largura_polegadas = 160 / 50.8
+    altura_polegadas = 247 / 50.8
+
+    fig, ax = plt.subplots(figsize=(largura_polegadas, altura_polegadas))
     sns.heatmap(pd.DataFrame(relatorio_classificacao).iloc[:, :].T, annot=True, fmt=".5g", cmap="Blues",\
-                 cbar=False, ax=ax, annot_kws={"size": 14})
-    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=14)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=14)
+                 cbar=False, ax=ax, annot_kws={"size": 7})
+    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=6)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=6)
+    fig.tight_layout()
+
     if save_fig == True:
         file_name = str("_".join(caminho.parts[1:])) + "_relatorio_classificacao.pdf"
-        plt.savefig(caminho / file_name, format="pdf")
+        plt.savefig(caminho / file_name, format="pdf", dpi=300)
         plt.close()
     else:
         plt.show()

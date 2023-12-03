@@ -61,5 +61,4 @@ def treino_media(dados: Dados, train_size: int, print_table: bool = False):
     if print_table:
         imprimir_contagem_amostras(nomes_treino, nomes_teste)
 
-
     return amostras_treino, amostras_teste, nomes_treino, nomes_teste

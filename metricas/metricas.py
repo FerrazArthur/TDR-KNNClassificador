@@ -73,7 +73,7 @@ def obter_distancia_minkowski_min_mean_max_em_classes(dados:Dict[str, pd.DataFra
         p (int, opcional): Ordem da distância de Minkowski. Padrão é 2.
     """
     # Cria um DataFrame vazio com os nomes dos DataFrames como índice e as colunas
-    matriz_distancia = pd.DataFrame(index=dados.keys(), columns=['distancia_minima', 'distancia_media' , 'distancia_maxima'], dtype=float)
+    matriz_distancia = pd.DataFrame(index=dados.keys(), columns=['Máxima', 'Media' , 'Mínima', 'DP'], dtype=float)
 
     # Percorre o dicionário e calcula a distância de Minkowski entre os DataFrames
     for nome, df in dados.items():
@@ -83,10 +83,10 @@ def obter_distancia_minkowski_min_mean_max_em_classes(dados:Dict[str, pd.DataFra
         minimo = min(distancias)
         desvio_padrao = distancias.std()
 
-        matriz_distancia.loc[nome, 'distancia_maxima'] = maximo
-        matriz_distancia.loc[nome, 'distancia_media'] = mean
-        matriz_distancia.loc[nome, 'distancia_minima'] = minimo
-        matriz_distancia.loc[nome, 'desvio_padrao'] = desvio_padrao
+        matriz_distancia.loc[nome, 'Máxima'] = maximo
+        matriz_distancia.loc[nome, 'Media'] = mean
+        matriz_distancia.loc[nome, 'Mínima'] = minimo
+        matriz_distancia.loc[nome, 'DP'] = desvio_padrao
 
     return matriz_distancia
 

@@ -74,7 +74,8 @@ def imprime_distribuicao_distancias(distancias:pd.DataFrame, save_fig=False, cam
     else:
         plt.show()
 
-def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig=False, caminho:str="", legendas:Dict[str, int]=None):
+def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig=False, caminho:str="",\
+                                       legendas:Dict[str, int]=None):
     """
     Imprime a matriz de distâncias entre as classes em um gráfico.
 
@@ -85,13 +86,17 @@ def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig
         legendas (Dict[str, int], opcional): Dicionário com as legendas das classes. Padrão é None.
     """
     # Tamanho da imagem em polegadas
-    largura_polegadas = 160 / 50.8
+    largura_polegadas = 200 / 50.8
     fig, ax = plt.subplots(figsize=(largura_polegadas, largura_polegadas))
     sns.heatmap(pd.DataFrame(matriz_distancias).astype(float), annot=True, fmt=".2g", cmap="Blues", \
                 cbar=False, ax=ax, annot_kws={"size": 4})
-    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=4)
+    
+    ax.set_xticks(np.arange(0.5, len(legendas.keys()), 1))
+    ax.set_yticks(np.arange(0.5, len(legendas.keys()), 1))
+    ax.set_yticklabels(legendas.keys(), rotation=0, fontsize=4)
     if legendas is not None:
-        ax.set_xticklabels([legendas[label.get_text()] for label in ax.get_xticklabels()], rotation=0, fontsize=4)
+        ax.set_xticklabels([legendas[label.get_text()] for label in ax.get_yticklabels()], rotation=0,\
+                            fontsize=4)
     else:
         ax.set_xticklabels(ax.get_xticklabels(), rotation=-90, fontsize=4)
     fig.tight_layout()
@@ -117,29 +122,22 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
         save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
     """
     # Tamanho da imagem em polegadas
-    largura_polegadas = 160 / 50.8
-
-    cmd = ConfusionMatrixDisplay(confusion_matrix=matriz_confusao, display_labels=dados.classes_lista)
+    largura_polegadas = 220 / 50.8
     fig, ax = plt.subplots(figsize=(largura_polegadas, largura_polegadas))
-    cmd.plot(values_format=".3g", ax=ax, cmap="Blues", colorbar=False)
-    ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=4)
-    ax.set_xticklabels([dados.legenda[label.get_text()] for label in ax.get_xticklabels()], rotation=0, fontsize=4)
-    ax.set_xlabel("")
-    ax.set_ylabel("")
-    # Adjusting font size for the text inside cells
+    sns.heatmap(pd.DataFrame(matriz_confusao, columns=dados.classes_lista, index=dados.classes_lista).astype(float), annot=True, fmt=".3g", cmap="Blues", \
+                cbar=False, ax=ax, annot_kws={"size": 3.5})
+    ax.set_xticks(np.arange(0.5, dados.num_classes, 1))
+    ax.set_yticks(np.arange(0.5, dados.num_classes, 1))
+    ax.set_yticklabels(dados.classes_lista, rotation=0, fontsize=3)
+    ax.set_xticklabels([dados.legenda[label.get_text()] for label in ax.get_yticklabels()], rotation=0,\
+                        fontsize=3)
+    fig.tight_layout()
+
     for text in ax.texts:
         current_text = text.get_text()
-        # Se current_text tiver mais que 2 casas decimais, arredonde pra 2 casas decimais
-        if len(current_text) > 2:
-            # Se current text for menor que 0.01, substitua por '-'
-            if float(current_text) < 0.01:
-                current_text = '*'
-            else:
-                current_text = round(float(current_text), 2)
-        formatted_text = f"{current_text}"  # Format the text to .3f
-        text.set_text(formatted_text)
-        text.set_fontsize(3)  # Adjust the font size as needed
-    fig.tight_layout()
+        if len(current_text) > 3:
+            formatted_text = round(float(current_text), 3)  # Arredonda
+            text.set_text(formatted_text)
 
     caminho = Path(titulo)
     

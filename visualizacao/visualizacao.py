@@ -110,13 +110,13 @@ def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig
     else:
         plt.show()
 
-def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confusao, \
-                                    relatorio_classificacao, titulo="", save_fig=False):
+def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confusao:Dict[str, Dict[str, float]], \
+                                    relatorio_classificacao:Dict[str, Dict[str, float]], titulo="", save_fig=False):
     """
     Imprime a matriz de confusão e o relatório de classificação em um gráfico único.
     Args:
         dados (Dados): Dados do conjunto de dados.
-        matriz_confusao (np.ndarray): Matriz de confusão.
+        matriz_confusao (Dict): Matriz de confusão.
         relatorio_classificacao (Dict): Relatório de classificação.
         titulo (str, opcional): Título do gráfico. Padrão é "".
         save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
@@ -128,9 +128,9 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
                 cbar=False, ax=ax, annot_kws={"size": 3.5})
     ax.set_xticks(np.arange(0.5, dados.num_classes, 1))
     ax.set_yticks(np.arange(0.5, dados.num_classes, 1))
-    ax.set_yticklabels(dados.classes_lista, rotation=0, fontsize=3)
+    ax.set_yticklabels(dados.classes_lista, rotation=0, fontsize=5)
     ax.set_xticklabels([dados.legenda[label.get_text()] for label in ax.get_yticklabels()], rotation=0,\
-                        fontsize=3)
+                        fontsize=5)
     fig.tight_layout()
 
     for text in ax.texts:
@@ -149,7 +149,7 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
     else:
         plt.show()
 
-    # Remove a linha 'weighted avg' do relatório de classificação
+    # Remove a linha 'accuracy' do relatório de classificação
     relatorio_classificacao.pop('accuracy')
     # Remove a coluna f1-score
     for chave, _ in relatorio_classificacao.items():
@@ -157,6 +157,12 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
             relatorio_classificacao[chave].pop('f1-score')
         except:
             pass
+
+    # Traduz avg
+    macro_avg = relatorio_classificacao.pop('macro avg')
+    weighted_avg = relatorio_classificacao.pop('weighted avg')
+    relatorio_classificacao['Média macro'] = macro_avg
+    relatorio_classificacao['Média ponderada'] = weighted_avg
 
     # Tamanho da imagem em polegadas
     largura_polegadas = 160 / 50.8
@@ -166,7 +172,7 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
     sns.heatmap(pd.DataFrame(relatorio_classificacao).iloc[:, :].T, annot=True, fmt=".5g", cmap="Blues",\
                  cbar=False, ax=ax, annot_kws={"size": 7})
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=6)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=6)
+    ax.set_xticklabels(["precisão", "Revocação", "Suporte"], rotation=0, fontsize=6)
     fig.tight_layout()
 
     if save_fig == True:

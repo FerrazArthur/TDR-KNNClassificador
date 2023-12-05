@@ -31,7 +31,8 @@ knn_pasta= "knn"
 # executar_multiplas_previsoes_KNN_matriz_confusao(conjunto_dados, [1], [630], treinos_lista=[treino_media], repeticoes=1, save_fig=True, fig_folder=str(conjunto2_nome / knn_pasta))
 
 conjunto_dados = Dados(conjunto1_nome)
-# conjunto_dados.imprime_classes(caminho=conjunto1_nome, save_fig=True)
+# conjunto_dados.imprime_classes(caminho=conjunto1_nome, save_fig=True, nome_arquivo="EXP_1_RESULT.pdf")
+# conjunto_dados.imprime_classes(caminho=conjunto1_nome, save_fig=True, nome_arquivo="EXP_1_MEANS.pdf", imprimir_medias=True)
 
 # imprime_matriz_distancias_classes(obter_distancia_minkowski_entre_classes(conjunto_dados.dicionario_dados, p=2), save_fig=True, caminho=conjunto1_nome, legendas=conjunto_dados.legenda)
 # imprime_distribuicao_distancias(obter_distancia_minkowski_min_mean_max_em_classes(conjunto_dados.dicionario_dados, p=2), save_fig=True, caminho=conjunto1_nome)
@@ -46,12 +47,20 @@ conjunto_dados = Dados(conjunto1_nome)
 #     print(f"{conjunto_dados.legenda[nome]} & {nome} & & & {df.shape[0]}\\\\")
 
 conjunto_dados = Dados(conjunto2_nome, base_codigo=8)
-# conjunto_dados.imprime_classes(caminho=conjunto2_nome, save_fig=True)
+# conjunto_dados.imprime_classes(caminho=conjunto2_nome, save_fig=True, nome_arquivo="EXP_2_RESULT.pdf")
+# conjunto_dados.imprime_classes(caminho=conjunto2_nome, save_fig=True, nome_arquivo="EXP_2_MEANS.pdf", imprimir_medias=True)
 
-Cargas_2_raw = Dados("2_cargas_raw", base_codigo=8)
-Cargas_2_raw.imprime_classes(caminho="2_cargas_raw", save_fig=True, nome_arquivo="EXP_2_RESULT.pdf")
+# Cargas_1_raw = Dados("1_carga_raw")
+# Cargas_1_raw.imprime_classes(caminho="1_carga_raw", save_fig=True, nome_arquivo="EXP_1_RESULT.pdf")
+# Cargas_1_raw.imprime_classes(caminho="1_carga_raw", lista_classes=["Circuito aberto", "Curto Circuito"], save_fig=True, nome_arquivo="EXP1_abertoFechado.pdf")
+# Cargas_1_raw.imprime_classes(caminho="1_carga_raw", save_fig=True, nome_arquivo="EXP_1_CUT.pdf", inicio_plot=2.35*(10**-7))
+
+# Cargas_2_raw = Dados("2_cargas_raw", base_codigo=8)
+# Cargas_2_raw.imprime_classes(caminho="2_cargas_raw", save_fig=True, nome_arquivo="EXP_2_RESULT.pdf")
 # Cargas_2_raw.imprime_classes(caminho="2_cargas_raw", lista_classes=["CA CA", "CA CC"], save_fig=True, nome_arquivo="EXP_2_1_2.pdf")
+
 # Cargas_2_raw.imprime_classes(caminho="2_cargas_raw", lista_classes=["CA CA", "CC CA"], save_fig=True, nome_arquivo="EXP_2_2_1.pdf")
+# Cargas_2_raw.imprime_classes(caminho="2_cargas_raw", lista_classes=["E1 CA", "E1 CC"], save_fig=True, nome_arquivo="EXP_2_2_1(2).pdf")
 
 # imprime_matriz_distancias_classes(obter_distancia_minkowski_entre_classes(conjunto_dados.dicionario_dados, p=2), save_fig=True, caminho=conjunto2_nome, legendas=conjunto_dados.legenda)
 # imprime_distribuicao_distancias(obter_distancia_minkowski_min_mean_max_em_classes(conjunto_dados.dicionario_dados, p=2), save_fig=True, caminho=conjunto2_nome)

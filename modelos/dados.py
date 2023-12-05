@@ -126,7 +126,7 @@ class Dados:
         for chave, amostra in self.dicionario_dados.items():
             self.dicionario_dados[chave] = amostra.iloc[:, ::extended_slices].dropna(axis=1)
 
-    def imprime_classes(self, lista_classes:List[str]=None, save_fig=False, caminho:str="", nome_arquivo:str="classes.pdf"):
+    def imprime_classes(self, lista_classes:List[str]=None, save_fig=False, caminho:str="", nome_arquivo:str="classes.pdf", inicio_plot:float=0, imprimir_medias:bool=False):
         """
         Imprime as classes do conjunto de dados.
 
@@ -134,9 +134,13 @@ class Dados:
             lista_classes (List[str], opcional): Lista com as classes a serem impressas. Padrão é None.
             save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
             caminho (str): Caminho para salvar a figura.
+            nome_arquivo (str): Nome do arquivo para salvar a figura.
+            inicio_plot (float): Tempo inicial para plotar a figura.
+            imprimir_medias (bool): Se True, imprime apenas o sinal médio de cada classe.
 
         Raises:
-            ValueError: Se a lista de classes possuir alguma classe não conhecida.
+            ValueError: Se a lista de classes possuir alguma classe não conhecida ou 
+            se inicio_plot for maior que o tempo total.
 
         Returns:
             None
@@ -149,13 +153,16 @@ class Dados:
                     raise ValueError(f"Classe {classe} não encontrada no conjunto de dados.")
         # Define largura em polegadas
         largura_polegadas = 455/72
-        altura_polegadas = 455/72
 
         np.random.seed(self.num_classes)
 
         fig, ax = plt.subplots(figsize=(largura_polegadas, largura_polegadas/2))
+        
+        # Baseada na frequência de 2GHz e nos 1000 pontos por amostra:
+        tempo_total = 5*(10**(-7)) #s seg
 
-        tempo_total = 1.93*(10**(-7)) #s seg
+        if inicio_plot > tempo_total:
+            raise ValueError(f"O tempo inicial para plotar a figura deve ser menor que o tempo total {tempo_total}.")
 
         num_pontos = self.dicionario_dados[lista_classes[0]].shape[1]
 
@@ -174,17 +181,24 @@ class Dados:
         # Adiciona uma legenda pra cada cor com um nome de classe
 
         for i, classe in enumerate(lista_classes):
-            ax.plot(tempo, self.dicionario_dados[classe].T, color=cores[classe], linewidth=0.005)
+            if imprimir_medias == True:
+                ax.plot(tempo, self.dicionario_dados[classe].mean(axis=0), color=cores[classe], linewidth=0.005)
+            else:
+                ax.plot(tempo, self.dicionario_dados[classe].T, color=cores[classe], linewidth=0.005)
         
 
         legendas = [plt.Line2D([0], [0], color=cor, label=classe, linewidth=0.002) for classe, cor in cores.items()]
-        ax.legend(loc="upper right", fontsize=3, framealpha=0.5, handles=legendas)
+
+        legenda = ax.legend(loc="upper right", fontsize=3, framealpha=0.5, handles=legendas)
+        for linha in legenda.get_lines():
+            linha.set_linewidth(1.5)
+
         ax.grid(True)
         # Adiciona detalhes matematicos
         ax.xaxis.set_major_formatter(ScalarFormatter(useMathText=True, useOffset=True))
         ax.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
 
-        ax.set_xlim(0, 2*(10**(-7)))
+        ax.set_xlim(inicio_plot, tempo_total)
         fig.tight_layout()
 
         if save_fig == True:

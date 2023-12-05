@@ -10,6 +10,7 @@ from statistics import mode
 from pathlib import Path
 import tracemalloc
 import time
+import datetime
 
 def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int=1, repeticoes:int=10,\
                                titulo:str="", save_fig:bool=False):
@@ -25,8 +26,8 @@ def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int
             titulo (str, opcional): Título do gráfico. Padrão é "".
             save_fig (bool, opcional): Se True, salva a figura gerada. Padrão é False.
     """
-    # tracemalloc.start()
-    # start_time = time.time()
+    tracemalloc.start()
+    start_time = time.time()
 
     previsoes_acumuladas = []
 
@@ -45,17 +46,28 @@ def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int
 
     mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
     rel_classificacao = classification_report(y_test, previsao_moda, output_dict=True)
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+
+    current, peak = tracemalloc.get_traced_memory()
+    
+    # Extrai minutos e segundos
+    minutos, resto = divmod(elapsed_time, 60)
+
+    # Formata a string
+    tempo_exec = "{:0}:{:05.2f}".format(int(minutos), resto)
+
+    memoria_maximo = f"{peak / 10**6:.2f}"
+
+    tempo_exec = tempo_exec.replace(".", ",")
+    memoria_maximo = memoria_maximo.replace(".", ",")
+
+    print(f"Tempo de execução: {tempo_exec}")
+    print(f"Pico de memória: {memoria_maximo}")
     
     imprime_matriz_confusao_e_relatorio_classificacao(dados, mat_confusao, rel_classificacao,\
                                                    titulo=titulo, save_fig=save_fig)
-
-    # end_time = time.time()
-    # elapsed_time = end_time - start_time
-
-    # current, peak = tracemalloc.get_traced_memory()
-    # print(f"Tempo de execução: {elapsed_time:.4f} segundos")
-    # print(f"Custo em memória: {current / 10**6:.4f} MB")
-    # print(f"Pico de memória: {peak / 10**6:.4f} MB")
 
 def obter_resultados_matriz_confusao_KNN(dados:Dados, divisao_treino, k_lista:List[int],\
             tamanho_treino_lista:List[int], repeticoes:int=10, titulo:str="", save_fig:bool=False):
@@ -131,8 +143,9 @@ def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, tamanh
             titulo (str, opcional): Título do gráfico. Padrão é "".
             save_fig (bool, opcional): Se True, salva a figura gerada. Padrão é False.
     """
-    # tracemalloc.start()
-    # start_time = time.time()
+    tracemalloc.start()
+    start_time = time.time()
+
     previsoes_acumuladas = []
 
     X_train, X_test, y_train, y_test = treino_regular(dados, train_size=tamanho_treino)
@@ -151,16 +164,28 @@ def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, tamanh
     mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
     rel_classificacao = classification_report(y_test, previsao_moda, output_dict=True)
 
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+
+    current, peak = tracemalloc.get_traced_memory()
+    
+    # Extrai minutos e segundos
+    minutos, resto = divmod(elapsed_time, 60)
+
+    # Formata a string
+    tempo_exec = "{:0}:{:05.2f}".format(int(minutos), resto)
+
+    memoria_maximo = f"{peak / 10**6:.2f}"
+
+    tempo_exec = tempo_exec.replace(".", ",")
+    memoria_maximo = memoria_maximo.replace(".", ",")
+
+    print(f"Tempo de execução: {tempo_exec}")
+    print(f"Pico de memória: {memoria_maximo}")
+
     imprime_matriz_confusao_e_relatorio_classificacao(dados, mat_confusao, rel_classificacao,\
                                                        titulo=titulo, save_fig=save_fig)
     
-    # end_time = time.time()
-    # elapsed_time = end_time - start_time
-
-    # current, peak = tracemalloc.get_traced_memory()
-    # print(f"Tempo de execução: {elapsed_time} segundos")
-    # print(f"Custo em memória: {current / 10**6} MB")
-    # print(f"Pico de memória: {peak / 10**6} MB")
 
 def obter_resultados_matriz_confusao_correlacao(dados:Dados, classificador:callable, \
             tamanho_treino_lista:List[int], repeticoes:int=10, titulo:str="", save_fig:bool=False):

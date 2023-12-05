@@ -1,6 +1,9 @@
 from dados.leitura import explorar_dataframe_csv
-from metricas.metricas import obter_vetor_distancias_a_media_dataframe, obter_escore_padrao
+from metricas.metricas import obter_escore_padrao
+import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter
 
+from typing import List
 from pathlib import Path
 from scipy import stats
 import numpy as np
@@ -122,3 +125,73 @@ class Dados:
         """
         for chave, amostra in self.dicionario_dados.items():
             self.dicionario_dados[chave] = amostra.iloc[:, ::extended_slices].dropna(axis=1)
+
+    def imprime_classes(self, lista_classes:List[str]=None, save_fig=False, caminho:str="", nome_arquivo:str="classes.pdf"):
+        """
+        Imprime as classes do conjunto de dados.
+
+        Args:
+            lista_classes (List[str], opcional): Lista com as classes a serem impressas. Padrão é None.
+            save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
+            caminho (str): Caminho para salvar a figura.
+
+        Raises:
+            ValueError: Se a lista de classes possuir alguma classe não conhecida.
+
+        Returns:
+            None
+        """
+        if lista_classes is None:
+            lista_classes = self.classes_lista
+        else:
+            for classe in lista_classes:
+                if classe not in self.classes_lista:
+                    raise ValueError(f"Classe {classe} não encontrada no conjunto de dados.")
+        # Define largura em polegadas
+        largura_polegadas = 455/72
+        altura_polegadas = 455/72
+
+        np.random.seed(self.num_classes)
+
+        fig, ax = plt.subplots(figsize=(largura_polegadas, largura_polegadas/2))
+
+        tempo_total = 1.93*(10**(-7)) #s seg
+
+        num_pontos = self.dicionario_dados[lista_classes[0]].shape[1]
+
+        # frequencia = num_pontos / float(tempo_total)
+
+        tempo = np.linspace(0, tempo_total, num_pontos)
+
+        ax.set_xlabel("Tempo (s)", fontsize=7)
+        # Altera o tamanho da fonte
+        ax.set_ylabel("Tensão (V)", fontsize=7)
+        # Adiciona grid
+
+
+        # Imprime as series temporais lado a lado, cada classe receberá uma cor
+        cores = {classe: np.random.rand(1, 3) * 0.65 for classe in lista_classes}
+        # Adiciona uma legenda pra cada cor com um nome de classe
+
+        for i, classe in enumerate(lista_classes):
+            ax.plot(tempo, self.dicionario_dados[classe].T, color=cores[classe], linewidth=0.005)
+        
+
+        legendas = [plt.Line2D([0], [0], color=cor, label=classe, linewidth=0.002) for classe, cor in cores.items()]
+        ax.legend(loc="upper right", fontsize=3, framealpha=0.5, handles=legendas)
+        ax.grid(True)
+        # Adiciona detalhes matematicos
+        ax.xaxis.set_major_formatter(ScalarFormatter(useMathText=True, useOffset=True))
+        ax.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
+
+        ax.set_xlim(0, 2*(10**(-7)))
+        fig.tight_layout()
+
+        if save_fig == True:
+            caminho = Path(caminho)
+            caminho.mkdir(parents=True, exist_ok=True)
+            file_name = str("_".join(caminho.parts[1:])) + nome_arquivo
+            plt.savefig(caminho / file_name, format="pdf", dpi=300)
+            plt.close()
+        else:
+            plt.show()

@@ -86,19 +86,19 @@ def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig
         legendas (Dict[str, int], opcional): Dicionário com as legendas das classes. Padrão é None.
     """
     # Tamanho da imagem em polegadas
-    largura_polegadas = 200 / 50.8
+    largura_polegadas = 455/72
     fig, ax = plt.subplots(figsize=(largura_polegadas, largura_polegadas))
     sns.heatmap(pd.DataFrame(matriz_distancias).astype(float), annot=True, fmt=".2g", cmap="Blues", \
-                cbar=False, ax=ax, annot_kws={"size": 4})
+                cbar=False, ax=ax, annot_kws={"size": 6})
     
     ax.set_xticks(np.arange(0.5, len(legendas.keys()), 1))
     ax.set_yticks(np.arange(0.5, len(legendas.keys()), 1))
-    ax.set_yticklabels(legendas.keys(), rotation=0, fontsize=4)
+    ax.set_yticklabels(legendas.keys(), rotation=0, fontsize=5)
     if legendas is not None:
-        ax.set_xticklabels([legendas[label.get_text()] for label in ax.get_yticklabels()], rotation=0,\
-                            fontsize=4)
+        ax.set_xticklabels(ax.get_yticklabels(), rotation=0,\
+                            fontsize=5)
     else:
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=-90, fontsize=4)
+        ax.set_xticklabels(ax.get_yticklabels(), rotation=-90, fontsize=5)
     fig.tight_layout()
 
     if save_fig == True:
@@ -122,14 +122,14 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
         save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
     """
     # Tamanho da imagem em polegadas
-    largura_polegadas = 220 / 50.8
+    largura_polegadas = 455/72
     fig, ax = plt.subplots(figsize=(largura_polegadas, largura_polegadas))
     sns.heatmap(pd.DataFrame(matriz_confusao, columns=dados.classes_lista, index=dados.classes_lista).astype(float), annot=True, fmt=".3g", cmap="Blues", \
-                cbar=False, ax=ax, annot_kws={"size": 3.5})
+                cbar=False, ax=ax, annot_kws={"size": 6})
     ax.set_xticks(np.arange(0.5, dados.num_classes, 1))
     ax.set_yticks(np.arange(0.5, dados.num_classes, 1))
     ax.set_yticklabels(dados.classes_lista, rotation=0, fontsize=5)
-    ax.set_xticklabels([dados.legenda[label.get_text()] for label in ax.get_yticklabels()], rotation=0,\
+    ax.set_xticklabels(dados.classes_lista, rotation=0,\
                         fontsize=5)
     fig.tight_layout()
 

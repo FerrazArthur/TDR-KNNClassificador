@@ -48,6 +48,10 @@ def imprime_distribuicao_padronizada_distancias(distancias:pd.Series, ddof:int=0
 
     plt.show()
 
+def formatar_valor(val):
+    # Função para formatar valores substituindo pontos por vírgulas
+    return str(val).replace('.', ',')
+
 def imprime_distribuicao_distancias(distancias:pd.DataFrame, save_fig=False, caminho:str=""):
     """
     Imprime a matriz com a média de todas as distâncias de cada amostra da classe à media(sinal medio)
@@ -65,6 +69,10 @@ def imprime_distribuicao_distancias(distancias:pd.DataFrame, save_fig=False, cam
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=6)
     ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=6)
     fig.tight_layout()
+
+    for text in ax.texts:
+        text.set_text(formatar_valor(text.get_text()))
+
     if save_fig == True:
         caminho = Path(caminho)
         caminho.mkdir(parents=True, exist_ok=True)
@@ -99,6 +107,11 @@ def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig
                             fontsize=5)
     else:
         ax.set_xticklabels(ax.get_yticklabels(), rotation=-90, fontsize=5)
+    
+    # Iterar sobre os textos nas células e aplicar o formatter
+    for text in ax.texts:
+        text.set_text(formatar_valor(text.get_text()))
+
     fig.tight_layout()
 
     if save_fig == True:
@@ -139,6 +152,9 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
             formatted_text = round(float(current_text), 3)  # Arredonda
             text.set_text(formatted_text)
 
+        # Substitui ponto por vírgula
+        text.set_text(formatar_valor(text.get_text()))
+
     caminho = Path(titulo)
     
     if save_fig == True:
@@ -173,6 +189,11 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
                  cbar=False, ax=ax, annot_kws={"size": 7})
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=6)
     ax.set_xticklabels(["precisão", "Revocação", "Suporte"], rotation=0, fontsize=6)
+
+    # Iterar sobre os textos nas células e aplicar o formatter
+    for text in ax.texts:
+        text.set_text(formatar_valor(text.get_text()))
+
     fig.tight_layout()
 
     if save_fig == True:

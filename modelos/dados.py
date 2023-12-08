@@ -5,7 +5,6 @@ from matplotlib.ticker import ScalarFormatter
 
 from typing import List
 from pathlib import Path
-from scipy import stats
 import numpy as np
 
 class Dados:
@@ -126,7 +125,7 @@ class Dados:
         for chave, amostra in self.dicionario_dados.items():
             self.dicionario_dados[chave] = amostra.iloc[:, ::extended_slices].dropna(axis=1)
 
-    def imprime_classes(self, lista_classes:List[str]=None, save_fig=False, caminho:str="", nome_arquivo:str="classes.pdf", inicio_plot:float=0, imprimir_medias:bool=False):
+    def imprime_classes(self, lista_classes:List[str]=None, save_fig=False, caminho:str="", nome_arquivo:str="classes.pdf", inicio_plot:float=0, imprimir_medias:bool=False, frequencia:float=5):
         """
         Imprime as classes do conjunto de dados.
 
@@ -137,6 +136,7 @@ class Dados:
             nome_arquivo (str): Nome do arquivo para salvar a figura.
             inicio_plot (float): Tempo inicial para plotar a figura.
             imprimir_medias (bool): Se True, imprime apenas o sinal médio de cada classe.
+            frequencia (float): Frequência de amostragem em Ghz
 
         Raises:
             ValueError: Se a lista de classes possuir alguma classe não conhecida ou 
@@ -158,15 +158,14 @@ class Dados:
 
         fig, ax = plt.subplots(figsize=(largura_polegadas, largura_polegadas/2))
         
-        # Baseada na frequência de 2GHz e nos 1000 pontos por amostra:
-        tempo_total = 5*(10**(-7)) #s seg
+        num_pontos = self.dicionario_dados[lista_classes[0]].shape[1]
+        # tempo_total = 5*(10**(-7)) #s seg
+        frequencia = frequencia*(10**9) #GHz
+        tempo_total = num_pontos / frequencia #s seg
+        # frequencia = num_pontos / float(tempo_total)
 
         if inicio_plot > tempo_total:
             raise ValueError(f"O tempo inicial para plotar a figura deve ser menor que o tempo total {tempo_total}.")
-
-        num_pontos = self.dicionario_dados[lista_classes[0]].shape[1]
-
-        # frequencia = num_pontos / float(tempo_total)
 
         tempo = np.linspace(0, tempo_total, num_pontos)
 

@@ -1,5 +1,5 @@
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, precision_score
 import pandas as pd
 from modelos.correlate_pred import ClassificadorCorrelacaoCruzada, ClassificadorCorrelacao
 from modelos.conjuntos_dados import treino_media, treino_regular
@@ -12,15 +12,17 @@ import tracemalloc
 import time
 import datetime
 
-def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int=1, repeticoes:int=10,\
+def obter_matriz_confusao_KNN(dados:Dados, X_train, X_test, y_train, y_test, k:int=1, repeticoes:int=10,\
                                titulo:str="", save_fig:bool=False):
     """
         Realiza o treino do classificador para uma distribuição e para um valor de k
         e imprime a matriz de confusão e o relatório de classificação.
         Args:
             dados (Dados): Objeto Dados com os dados a serem utilizados.
-            divisao_treino (callable): Função de divisão de treino a ser utilizada.
-            tamanho_treino (int): Tamanho do conjunto de treino.
+            X_train (List): Lista com os dados de treino.
+            X_test (List): Lista com os dados de teste.
+            y_train (List): Lista com as classes do conjunto de treino.
+            y_test (List): Lista com as classes do conjunto de teste.
             k (int, opcional): Número de vizinhos a serem considerados. Padrão é 1.
             repeticoes (int, opcional): Número de repetições de cada teste. Padrão é 10.
             titulo (str, opcional): Título do gráfico. Padrão é "".
@@ -30,8 +32,6 @@ def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int
     start_time = time.time()
 
     previsoes_acumuladas = []
-
-    X_train, X_test, y_train, y_test = divisao_treino(dados, train_size=tamanho_treino)
 
     knn_class = KNeighborsClassifier(n_neighbors=k, weights='distance', algorithm='brute')
 
@@ -46,6 +46,10 @@ def obter_matriz_confusao_KNN(dados:Dados, divisao_treino, tamanho_treino, k:int
 
     mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
     rel_classificacao = classification_report(y_test, previsao_moda, output_dict=True)
+
+    # imprimir a precisão ponderada arrendodada 5 casas decimais após a vírgula
+    # precisao_ponderada = precision_score(y_test, previsao_moda, average='weighted')
+    # print(f"precisao_ponderada = {precisao_ponderada:.5f}")
 
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -88,7 +92,8 @@ def obter_resultados_matriz_confusao_KNN(dados:Dados, divisao_treino, k_lista:Li
         print(f"k = {k}")
         for tamanho_treino in tamanho_treino_lista:
             print(f"Amostra de treino = {tamanho_treino}")
-            obter_matriz_confusao_KNN(dados, divisao_treino, tamanho_treino, k, repeticoes,\
+            X_train, X_test, y_train, y_test = divisao_treino(dados, train_size=tamanho_treino)
+            obter_matriz_confusao_KNN(dados, X_train, X_test, y_train, y_test, k, repeticoes,\
                                    titulo=str(Path(titulo) / f"k-{k}" / f"n-{tamanho_treino}"),\
                                       save_fig=save_fig)
 
@@ -130,14 +135,17 @@ def executar_multiplas_previsoes_KNN_matriz_confusao(dados:Dados, k_lista:List[i
 
 #------------------------------------------------------------
 
-def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, tamanho_treino:int,\
+def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, X_train, X_test, y_train, y_test,\
         repeticoes:int=10, titulo:str="", save_fig:bool=False):
     """
         Realiza o treino do classificador para uma distribuição e 
         imprime a matriz de confusão e o relatório de classificação.
         Args:
             dados (Dados): Objeto Dados com os dados a serem utilizados.
-            classificador (callable): Construtor do classificador a ser utilizado.
+            X_train (List): Lista com os dados de treino.
+            X_test (List): Lista com os dados de teste.
+            y_train (List): Lista com as classes do conjunto de treino.
+            y_test (List): Lista com as classes do conjunto de teste.
             tamanho_treino (int): Tamanho do conjunto de treino.
             repeticoes (int, opcional): Número de repetições de cada teste. Padrão é 10.
             titulo (str, opcional): Título do gráfico. Padrão é "".
@@ -148,7 +156,7 @@ def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, tamanh
 
     previsoes_acumuladas = []
 
-    X_train, X_test, y_train, y_test = treino_regular(dados, train_size=tamanho_treino)
+    # X_train, X_test, y_train, y_test = treino_regular(dados, train_size=tamanho_treino)
 
     classificador_instancia = classificador()
 
@@ -163,7 +171,9 @@ def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, tamanh
 
     mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
     rel_classificacao = classification_report(y_test, previsao_moda, output_dict=True)
-
+    # Calcula a precisão ponderada
+    # precisao_ponderada = precision_score(y_test, previsao_moda, average='weighted')
+    # print(f"precisao_ponderada = {precisao_ponderada:.5f}")
     end_time = time.time()
     elapsed_time = end_time - start_time
 
@@ -203,7 +213,8 @@ def obter_resultados_matriz_confusao_correlacao(dados:Dados, classificador:calla
 
     for tamanho_treino in tamanho_treino_lista:
         print(f"Amostra de treino = {tamanho_treino}")
-        obter_matriz_confusao_correlacao(dados, classificador, tamanho_treino, repeticoes,\
+        X_train, X_test, y_train, y_test = treino_regular(dados, train_size=tamanho_treino)
+        obter_matriz_confusao_correlacao(dados, classificador, X_train, X_test, y_train, y_test, repeticoes,\
                                 titulo=str(Path(titulo) / f"n-{tamanho_treino}"),\
                                     save_fig=save_fig)
             

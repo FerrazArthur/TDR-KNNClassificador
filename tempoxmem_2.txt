@@ -1,0 +1,211 @@
+Classificador: ClassificadorCorrelacao
+Amostra de treino = 32
+Tempo de execução: 3:50,86
+Pico de memória: 2,29
+Amostra de treino = 64
+Tempo de execução: 4:02,96
+Pico de memória: 5,49
+Amostra de treino = 120
+Tempo de execução: 3:59,41
+Pico de memória: 8,36
+Amostra de treino = 240
+Tempo de execução: 3:59,05
+Pico de memória: 8,36
+Amostra de treino = 480
+Tempo de execução: 3:44,66
+Pico de memória: 11,62
+Classificador: ClassificadorCorrelacaoCruzada
+Amostra de treino = 32
+Tempo de execução: 2:34,24
+Pico de memória: 11,62
+Amostra de treino = 64
+Tempo de execução: 2:37,97
+Pico de memória: 13,70
+Amostra de treino = 120
+Tempo de execução: 2:30,73
+Pico de memória: 15,22
+Amostra de treino = 240
+Tempo de execução: 2:34,04
+Pico de memória: 17,70
+Amostra de treino = 480
+Tempo de execução: 2:24,00
+Pico de memória: 17,70
+Treino: treino_media
+k = 1
+Amostra de treino = 32
+Tempo de execução: 0:01,61
+Pico de memória: 86,67
+Amostra de treino = 64
+Tempo de execução: 0:01,59
+Pico de memória: 88,60
+Amostra de treino = 120
+Tempo de execução: 0:01,57
+Pico de memória: 90,09
+Amostra de treino = 240
+Tempo de execução: 0:01,61
+Pico de memória: 90,40
+Amostra de treino = 480
+Tempo de execução: 0:01,36
+Pico de memória: 90,40
+k = 3
+Amostra de treino = 32
+Tempo de execução: 0:01,84
+Pico de memória: 90,40
+Amostra de treino = 64
+Tempo de execução: 0:01,64
+Pico de memória: 90,40
+Amostra de treino = 120
+Tempo de execução: 0:01,79
+Pico de memória: 90,40
+Amostra de treino = 240
+Tempo de execução: 0:01,62
+Pico de memória: 90,40
+Amostra de treino = 480
+Tempo de execução: 0:01,50
+Pico de memória: 90,40
+k = 5
+Amostra de treino = 32
+Tempo de execução: 0:01,65
+Pico de memória: 90,40
+Amostra de treino = 64
+Tempo de execução: 0:01,72
+Pico de memória: 90,40
+Amostra de treino = 120
+Tempo de execução: 0:01,59
+Pico de memória: 90,40
+Amostra de treino = 240
+Tempo de execução: 0:01,71
+Pico de memória: 90,40
+Amostra de treino = 480
+Tempo de execução: 0:01,35
+Pico de memória: 90,40
+Classificador: ClassificadorCorrelacao
+Amostra de treino = 630
+Tempo de execução: 13:23,52
+Pico de memória: 90,40
+Amostra de treino = 1050
+Tempo de execução: 12:56,37
+Pico de memória: 90,40
+Amostra de treino = 1260
+Tempo de execução: 12:02,07
+Pico de memória: 90,40
+Amostra de treino = 1470
+Tempo de execução: 11:59,41
+Pico de memória: 90,40
+Amostra de treino = 1932
+Tempo de execução: 10:40,99
+Pico de memória: 90,40
+Classificador: ClassificadorCorrelacaoCruzada
+Amostra de treino = 630
+Tempo de execução: 8:48,84
+Pico de memória: 90,40
+Amostra de treino = 1050
+Tempo de execução: 8:15,09
+Pico de memória: 90,40
+Amostra de treino = 1260
+Tempo de execução: 7:56,45
+Pico de memória: 90,40
+Amostra de treino = 1470
+Tempo de execução: 7:39,27
+Pico de memória: 90,40
+Amostra de treino = 1932
+Tempo de execução: 6:45,72
+Pico de memória: 90,40
+Treino: treino_regular
+k = 1
+Amostra de treino = 630
+Tempo de execução: 0:02,84
+Pico de memória: 118,39
+Amostra de treino = 1050
+Tempo de execução: 0:03,46
+Pico de memória: 126,02
+Amostra de treino = 1260
+Tempo de execução: 0:03,66
+Pico de memória: 126,02
+Amostra de treino = 1470
+Tempo de execução: 0:03,91
+Pico de memória: 126,02
+Amostra de treino = 1932
+Tempo de execução: 0:03,91
+Pico de memória: 126,02
+k = 3
+Amostra de treino = 630
+Tempo de execução: 0:03,17
+Pico de memória: 126,02
+Amostra de treino = 1050
+Tempo de execução: 0:03,63
+Pico de memória: 126,07
+Amostra de treino = 1260
+Tempo de execução: 0:03,75
+Pico de memória: 126,07
+Amostra de treino = 1470
+Tempo de execução: 0:04,04
+Pico de memória: 126,07
+Amostra de treino = 1932
+Tempo de execução: 0:04,09
+Pico de memória: 126,07
+k = 5
+Amostra de treino = 630
+Tempo de execução: 0:03,01
+Pico de memória: 126,62
+Amostra de treino = 1050
+Tempo de execução: 0:03,54
+Pico de memória: 126,62
+Amostra de treino = 1260
+Tempo de execução: 0:03,80
+Pico de memória: 126,62
+Amostra de treino = 1470
+Tempo de execução: 0:04,18
+Pico de memória: 126,62
+Amostra de treino = 1932
+Tempo de execução: 0:04,09
+Pico de memória: 126,62
+Treino: treino_media
+k = 1
+Amostra de treino = 630
+Tempo de execução: 0:01,90
+Pico de memória: 167,62
+Amostra de treino = 1050
+Tempo de execução: 0:02,28
+Pico de memória: 167,62
+Amostra de treino = 1260
+Tempo de execução: 0:01,70
+Pico de memória: 167,62
+Amostra de treino = 1470
+Tempo de execução: 0:02,12
+Pico de memória: 167,62
+Amostra de treino = 1932
+Tempo de execução: 0:01,48
+Pico de memória: 167,62
+k = 3
+Amostra de treino = 630
+Tempo de execução: 0:02,58
+Pico de memória: 167,62
+Amostra de treino = 1050
+Tempo de execução: 0:01,87
+Pico de memória: 167,62
+Amostra de treino = 1260
+Tempo de execução: 0:02,10
+Pico de memória: 167,62
+Amostra de treino = 1470
+Tempo de execução: 0:01,70
+Pico de memória: 167,62
+Amostra de treino = 1932
+Tempo de execução: 0:01,82
+Pico de memória: 167,62
+k = 5
+Amostra de treino = 630
+Tempo de execução: 0:02,23
+Pico de memória: 167,62
+Amostra de treino = 1050
+Tempo de execução: 0:02,26
+Pico de memória: 167,62
+Amostra de treino = 1260
+Tempo de execução: 0:01,98
+Pico de memória: 167,62
+Amostra de treino = 1470
+Tempo de execução: 0:01,98
+Pico de memória: 167,62
+Amostra de treino = 1932
+Tempo de execução: 0:01,64
+Pico de memória: 167,62

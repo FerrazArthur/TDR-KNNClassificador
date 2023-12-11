@@ -6,6 +6,7 @@ from matplotlib.ticker import ScalarFormatter
 from typing import List
 from pathlib import Path
 import numpy as np
+import locale
 
 class Dados:
     """
@@ -181,9 +182,9 @@ class Dados:
 
         for i, classe in enumerate(lista_classes):
             if imprimir_medias == True:
-                ax.plot(tempo, self.dicionario_dados[classe].mean(axis=0), color=cores[classe], linewidth=0.005)
+                ax.plot(tempo, self.dicionario_dados[classe].mean(axis=0), color=cores[classe], linewidth=0.1, alpha=1)
             else:
-                ax.plot(tempo, self.dicionario_dados[classe].T, color=cores[classe], linewidth=0.005)
+                ax.plot(tempo, self.dicionario_dados[classe].T, color=cores[classe], linewidth=0.075, alpha=1)
         
 
         legendas = [plt.Line2D([0], [0], color=cor, label=classe, linewidth=0.002) for classe, cor in cores.items()]
@@ -194,8 +195,9 @@ class Dados:
 
         ax.grid(True)
         # Adiciona detalhes matematicos
-        ax.xaxis.set_major_formatter(ScalarFormatter(useMathText=True, useOffset=True))
-        ax.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
+        ax.xaxis.set_major_formatter(ScalarFormatter(useMathText=False, useOffset=False))
+        locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+        ax.ticklabel_format(style="sci", axis="x", scilimits=(-9, -9), useLocale=True)
 
         ax.set_xlim(inicio_plot, tempo_total)
         fig.tight_layout()
@@ -208,3 +210,5 @@ class Dados:
             plt.close()
         else:
             plt.show()
+            
+        locale.setlocale(locale.LC_ALL, 'C')

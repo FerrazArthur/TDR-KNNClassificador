@@ -135,7 +135,7 @@ class Dados:
             save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
             caminho (str): Caminho para salvar a figura.
             nome_arquivo (str): Nome do arquivo para salvar a figura.
-            inicio_plot (float): Tempo inicial para plotar a figura.
+            inicio_plot (float): Tempo inicial para plotar a figura, em ns.
             imprimir_medias (bool): Se True, imprime apenas o sinal médio de cada classe.
             frequencia (float): Frequência de amostragem em Ghz
 
@@ -164,6 +164,8 @@ class Dados:
         frequencia = frequencia*(10**9) #GHz
         tempo_total = num_pontos / frequencia #s seg
         # frequencia = num_pontos / float(tempo_total)
+        
+        inicio_plot = inicio_plot*(10**(-9)) #ns
 
         if inicio_plot > tempo_total:
             raise ValueError(f"O tempo inicial para plotar a figura deve ser menor que o tempo total {tempo_total}.")
@@ -189,7 +191,7 @@ class Dados:
 
         legendas = [plt.Line2D([0], [0], color=cor, label=classe, linewidth=0.002) for classe, cor in cores.items()]
 
-        legenda = ax.legend(loc="upper right", fontsize=3, framealpha=0.5, handles=legendas)
+        legenda = ax.legend(loc="upper right", fontsize=6, framealpha=0.5, handles=legendas, ncol=3)
         for linha in legenda.get_lines():
             linha.set_linewidth(1.5)
 

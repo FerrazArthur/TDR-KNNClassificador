@@ -11,23 +11,6 @@ from pathlib import Path
 import tracemalloc
 import time
 import datetime
-from concurrent.futures import ProcessPoolExecutor
-from functools import partial
-
-def knn_multiprocess(dados:Dados, divisao_treino:callable, k:int, tamanho_treino:int, repeticoes:int,\
-                          titulo:str, save_fig:bool, _):
-    X_train, X_test, y_train, y_test = divisao_treino(dados, train_size=tamanho_treino)
-    TE, P = obter_matriz_confusao_KNN(dados, X_train, X_test, y_train, y_test, k, repeticoes,
-                                          titulo=str(Path(titulo) / f"k-{k}" / f"n-{tamanho_treino}"),
-                                          save_fig=save_fig)
-    return TE, P
-def ca_cc_multiprocess(dados:Dados, classificador:callable, tamanho_treino:int, repeticoes:int,\
-                          titulo:str, save_fig:bool, _):
-    X_train, X_test, y_train, y_test = treino_regular(dados, train_size=tamanho_treino)
-    TE, P = obter_matriz_confusao_correlacao(dados, classificador, X_train, X_test, y_train, y_test, repeticoes,\
-                                          titulo=str(Path(titulo) / f"n-{tamanho_treino}"),
-                                          save_fig=save_fig)
-    return TE, P
 
 def obter_matriz_confusao_KNN(dados:Dados, X_train, X_test, y_train, y_test, k:int=1, repeticoes:int=10,\
                                titulo:str="", save_fig:bool=False)-> Tuple[int, float]:
@@ -47,8 +30,8 @@ def obter_matriz_confusao_KNN(dados:Dados, X_train, X_test, y_train, y_test, k:i
         Returns:
             Tuple[str, str]: Lista com o tempo de execução, pico de memória e precisão ponderada.
     """
-    # tracemalloc.start()
-    # start_mem, _ = tracemalloc.get_traced_memory()
+    tracemalloc.start()
+    start_mem, _ = tracemalloc.get_traced_memory()
     start_time = time.time()
 
     previsoes_acumuladas = []
@@ -64,7 +47,7 @@ def obter_matriz_confusao_KNN(dados:Dados, X_train, X_test, y_train, y_test, k:i
 
     previsao_moda = [mode(preds) for preds in zip(*previsoes_acumuladas)]
 
-    # mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
+    mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
     rel_classificacao = classification_report(y_test, previsao_moda, output_dict=True)
 
     # imprimir a precisão ponderada arrendodada 5 casas decimais após a vírgula
@@ -74,7 +57,7 @@ def obter_matriz_confusao_KNN(dados:Dados, X_train, X_test, y_train, y_test, k:i
     end_time = time.time()
     elapsed_time = end_time - start_time
 
-    # _, peak = tracemalloc.get_traced_memory()
+    _, peak = tracemalloc.get_traced_memory()
     
     # # Extrai minutos e segundos
     # minutos, resto = divmod(elapsed_time, 60)
@@ -90,9 +73,9 @@ def obter_matriz_confusao_KNN(dados:Dados, X_train, X_test, y_train, y_test, k:i
     # print(f"Tempo de execução: {tempo_exec}")
     # print(f"Pico de memória: {memoria_maximo}")
     
-    # imprime_matriz_confusao_e_relatorio_classificacao(dados, mat_confusao, rel_classificacao,\
-    #                                                titulo=titulo, save_fig=save_fig)
-    return elapsed_time, rel_classificacao['weighted avg']['precision']
+    imprime_matriz_confusao_e_relatorio_classificacao(dados, mat_confusao, rel_classificacao,\
+                                                   titulo=titulo, save_fig=save_fig)
+    return elapsed_time, peak - start_mem, rel_classificacao['Acurácia']
 
 def obter_resultados_matriz_confusao_KNN(dados:Dados, divisao_treino, k_lista:List[int],\
             tamanho_treino_lista:List[int], repeticoes:int=10, titulo:str="", save_fig:bool=False)\
@@ -120,26 +103,26 @@ def obter_resultados_matriz_confusao_KNN(dados:Dados, divisao_treino, k_lista:Li
         tam_treino = {}
         for tamanho_treino in tamanho_treino_lista:
             print(f"Amostra de treino = {tamanho_treino}")
-            # for i in range(10):
-                # X_train, X_test, y_train, y_test = divisao_treino(dados, train_size=tamanho_treino)
-                # TE, PM, P = obter_matriz_confusao_KNN(dados, X_train, X_test, y_train, y_test, k, repeticoes,\
-                #                     titulo=str(Path(titulo) / f"k-{k}" / f"n-{tamanho_treino}"),\
-                #                         save_fig=save_fig)
-                # # Lista para armazenar resultados
-            resultados = []
-            # Usar ProcessPoolExecutor para executar a função em vários processos
-            with ProcessPoolExecutor(max_workers=10) as executor:
-                # Mapear a função para cada iteração do loop
-                resultados = list(executor.map(partial(knn_multiprocess, dados, divisao_treino, k,\
-                                                        tamanho_treino, repeticoes,\
-                                    titulo, save_fig), range(10)))
-
-            # Extrair resultados individuais
-            TE_v = [result[0] for result in resultados]
-            P_v = [result[1] for result in resultados]
+            TE_v = []
+            P_v = []
+            PM_v = []
+            for i in range(10):
+                X_train, X_test, y_train, y_test = divisao_treino(dados, train_size=tamanho_treino)
+                if i == 0: # imprime apenas uma vez
+                    TE, PM, P = obter_matriz_confusao_KNN(dados, X_train, X_test, y_train, y_test, k, repeticoes,\
+                                        titulo=str(Path(titulo) / f"k-{k}" / f"n-{tamanho_treino}"),\
+                                            save_fig=save_fig)
+                if i != 0: # imprime apenas uma vez
+                    TE, PM, P = obter_matriz_confusao_KNN(dados, X_train, X_test, y_train, y_test, k, repeticoes,\
+                                        titulo=str(Path(titulo) / f"k-{k}" / f"n-{tamanho_treino}"),\
+                                            save_fig=False)
+                TE_v.append(TE)
+                P_v.append(P)
+                PM_v.append(PM)
 
             # calcula as médias
             TE = sum(TE_v)/len(TE_v)
+            PM = sum(PM_v)/len(PM_v)
             P = sum(P_v)/len(P_v)
             
             # Extrai minutos e segundos
@@ -147,10 +130,11 @@ def obter_resultados_matriz_confusao_KNN(dados:Dados, divisao_treino, k_lista:Li
 
             # Formata a string
             TE = "{:0}:{:05.2f}".format(int(minutos), resto).replace(".", ",")
+            PM = f"{PM / 10**6:.2f}".replace(".", ",")
 
             P = f"{P:.5g}".replace(".", ",")
 
-            tam_treino[str(tamanho_treino)] = {"TE": TE, "P": P}
+            tam_treino[str(tamanho_treino)] = {"TE": TE,"PM": PM, "P": P}
         result_list[f"k_{k}"] = tam_treino
     return result_list
 
@@ -218,8 +202,8 @@ def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, X_trai
         Returns:
             Tuple[str, str, str]: Lista com o tempo de execução, pico de memória e precisão ponderada.
     """
-    # tracemalloc.start()
-    # start_mem, _ = tracemalloc.get_traced_memory()
+    tracemalloc.start()
+    start_mem, _ = tracemalloc.get_traced_memory()
     start_time = time.time()
 
     previsoes_acumuladas = []
@@ -237,7 +221,7 @@ def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, X_trai
 
     previsao_moda = [mode(preds) for preds in zip(*previsoes_acumuladas)]
 
-    # mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
+    mat_confusao = confusion_matrix(y_test, previsao_moda, normalize='true')
     rel_classificacao = classification_report(y_test, previsao_moda, output_dict=True)
 
     # imprimir a precisão ponderada arrendodada 5 casas decimais após a vírgula
@@ -247,7 +231,7 @@ def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, X_trai
     end_time = time.time()
     elapsed_time = end_time - start_time
 
-    # current, peak = tracemalloc.get_traced_memory()
+    _, peak = tracemalloc.get_traced_memory()
     
     # # Extrai minutos e segundos
     # minutos, resto = divmod(elapsed_time, 60)
@@ -262,9 +246,9 @@ def obter_matriz_confusao_correlacao(dados:Dados, classificador:callable, X_trai
     # print(f"Tempo de execução: {tempo_exec}")
     # print(f"Pico de memória: {memoria_maximo}")
 
-    # imprime_matriz_confusao_e_relatorio_classificacao(dados, mat_confusao, rel_classificacao,\
-    #                                                    titulo=titulo, save_fig=save_fig)
-    return elapsed_time, rel_classificacao['weighted avg']['precision']   
+    imprime_matriz_confusao_e_relatorio_classificacao(dados, mat_confusao, rel_classificacao,\
+                                                       titulo=titulo, save_fig=save_fig)
+    return elapsed_time, peak - start_mem, rel_classificacao['Acurácia']
 
 def obter_resultados_matriz_confusao_correlacao(dados:Dados, classificador:callable, \
             tamanho_treino_lista:List[int], repeticoes:int=10, titulo:str="", save_fig:bool=False)\
@@ -288,32 +272,35 @@ def obter_resultados_matriz_confusao_correlacao(dados:Dados, classificador:calla
     for tamanho_treino in tamanho_treino_lista:
         print(f"Amostra de treino = {tamanho_treino}")
 
-        # for i in range(10):
-        #     X_train, X_test, y_train, y_test = treino_regular(dados, train_size=tamanho_treino)
-        #     TE, PM, P = obter_matriz_confusao_correlacao(dados, classificador, X_train, X_test, y_train,\
-        #  y_test, repeticoes, titulo=str(Path(titulo) / f"n-{tamanho_treino}"), save_fig=save_fig)
-        resultados = []
-        # Usar ProcessPoolExecutor para executar a função em vários processos
-        with ProcessPoolExecutor(max_workers=10) as executor:
-            # Mapear a função para cada iteração do loop
-            resultados = list(executor.map(partial(ca_cc_multiprocess, dados, classificador,\
-                                                    tamanho_treino, repeticoes,\
-                                titulo, save_fig), range(10)))
-        TE_v = [result[0] for result in resultados]
-        P_v = [result[1] for result in resultados]
+        TE_v = []
+        P_v = []
+        PM_v = []
+        for i in range(10):
+            X_train, X_test, y_train, y_test = treino_regular(dados, train_size=tamanho_treino)
+            if i == 0: # imprime apenas uma vez
+                TE, PM, P = obter_matriz_confusao_correlacao(dados, classificador, X_train, X_test, y_train,\
+            y_test, repeticoes, titulo=str(Path(titulo) / f"n-{tamanho_treino}"), save_fig=save_fig)
+            if i != 0: # imprime apenas uma vez
+                TE, PM, P = obter_matriz_confusao_correlacao(dados, classificador, X_train, X_test, y_train,\
+            y_test, repeticoes, titulo=str(Path(titulo) / f"n-{tamanho_treino}"), save_fig=False)
+            TE_v.append(TE)
+            P_v.append(P)
+            PM_v.append(PM)
+
         # calcula as médias
         TE = sum(TE_v)/len(TE_v)
         P = sum(P_v)/len(P_v)
+        PM = sum(PM_v)/len(PM_v)
         
         # Extrai minutos e segundos
         minutos, resto = divmod(TE, 60)
 
         # Formata a string
         TE = "{:0}:{:05.2f}".format(int(minutos), resto).replace(".", ",")
-
+        PM = f"{PM / 10**6:.2f}".replace(".", ",")
         P = f"{P:.5g}".replace(".", ",")
         
-        result[str(tamanho_treino)] = {"TE": TE, "P": P}
+        result[str(tamanho_treino)] = {"TE": TE, "PM": PM, "P": P}
     return result
             
 def executar_multiplas_previsoes_correlacao_matriz_confusao(dados:Dados, classificador:callable,\

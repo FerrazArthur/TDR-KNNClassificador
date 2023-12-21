@@ -23,18 +23,18 @@ class Dados:
         self.num_classes = len(self.legenda)
         self.num_amostras = sum(df.shape[0] for df in self.dicionario_dados.values())
 
-    def normalizar_amostras(self, imprimir:bool=False):
+    def equalizar_amostras(self, imprimir:bool=False):
         """
-        Normaliza o número de amostras em todas as classes. Para tanto, a função percorre todas as classes no
-        dicionário de dados e, se uma classe tiver mais amostras do que o
-        número mínimo encontrado, ela remove o excedente de amostras.
+        Equaliza o número de amostras em todas as classes. Para tanto, a função percorre todas as
+         classes no dicionário de dados e, se uma classe tiver mais amostras do que o número mínimo\
+          encontrado, ela remove o excedente de amostras.
 
-        Esta função é útil para garantir que todas as classes tenham o mesmo número de amostras, facilitando
-        comparações e análises.
+        Esta função é útil para garantir que todas as classes tenham o mesmo número de amostras, 
+         facilitando comparações e análises.
 
         Args:
-            imprimir (bool, opcional): Se True, imprime o número de amostras de cada classe antes e depois da 
-            normalização. Padrão é False.
+            imprimir (bool, opcional): Se True, imprime o número de amostras de cada classe antes e 
+             depois da equalização. Padrão é False.
 
         Raises:
             None
@@ -65,14 +65,15 @@ class Dados:
         """
         Remove outliers de todos os dataframes no dicionário de dados.
 
-        A função percorre todas as classes no dicionário de dados e remove os outliers de cada classe.
+        A função percorre todas as classes no dicionário de dados e remove os outliers de cada 
+         lasse.
         Esse processo é repetido até nao haver mais alteração no tamanho das amostras.
 
         Args:
             limite (int, opcional): Limite para o z-score. Padrão é 3.
             ddof (int, opcional): Graus de liberdade para o cálculo do desvio padrão. Padrão é 1.
-            imprimir (bool, opcional): Se True, imprime o tamanho do conjunto de dados após cada iteração. 
-            Padrão é False.
+            imprimir (bool, opcional): Se True, imprime o tamanho do conjunto de dados após cada 
+             iteração. Padrão é False.
 
         Raises:
             None
@@ -107,12 +108,13 @@ class Dados:
 
             tamanho_anterior = self.num_amostras
     
-    def reduzir_dimensionalidade(self, extended_slices:int=2):
+    def reduzir_amostragem(self, extended_slices:int=2):
         """
-        Reduz a dimensionalidade de todos os dataframes no dicionário de dados.
+        Reduz a quantidade de pontos em todas as amostras de todos os dataframes no dicionário 
+         de dados.
 
-        A função percorre todas as amostras no dicionário de dados e a substitui por uma subamostra
-        com passo igual a extended_slices.
+        A função percorre todas as amostras no dicionário de dados e a substitui por uma 
+         subamostra com passo igual a extended_slices.
 
         Args:
             extended_slices (int, opcional): Tamanho do passo. Padrão é 2.
@@ -126,12 +128,15 @@ class Dados:
         for chave, amostra in self.dicionario_dados.items():
             self.dicionario_dados[chave] = amostra.iloc[:, ::extended_slices].dropna(axis=1)
 
-    def imprime_classes(self, lista_classes:List[str]=None, save_fig=False, caminho:str="", nome_arquivo:str="classes.pdf", inicio_plot:float=0, imprimir_medias:bool=False, frequencia:float=5):
+    def imprime_classes(self, lista_classes:List[str]=None, save_fig=False, caminho:str="",\
+         nome_arquivo:str="classes.pdf", inicio_plot:float=0, imprimir_medias:bool=False, \
+         frequencia:float=5):
         """
         Imprime as classes do conjunto de dados.
 
         Args:
-            lista_classes (List[str], opcional): Lista com as classes a serem impressas. Padrão é None.
+            lista_classes (List[str], opcional): Lista com as classes a serem impressas. \
+                Padrão é None.
             save_fig (bool, opcional): Se True, salva a figura. Padrão é False.
             caminho (str): Caminho para salvar a figura.
             nome_arquivo (str): Nome do arquivo para salvar a figura.
@@ -168,7 +173,8 @@ class Dados:
         inicio_plot = inicio_plot*(10**(-9)) #ns
 
         if inicio_plot > tempo_total:
-            raise ValueError(f"O tempo inicial para plotar a figura deve ser menor que o tempo total {tempo_total}.")
+            raise ValueError(f"O tempo inicial para plotar a figura deve ser menor que o tempo\
+                              total {tempo_total}.")
 
         tempo = np.linspace(0, tempo_total, num_pontos)
 
@@ -184,14 +190,18 @@ class Dados:
 
         for i, classe in enumerate(lista_classes):
             if imprimir_medias == True:
-                ax.plot(tempo, self.dicionario_dados[classe].mean(axis=0), color=cores[classe], linewidth=0.1, alpha=1)
+                ax.plot(tempo, self.dicionario_dados[classe].mean(axis=0), color=cores[classe],\
+                 linewidth=0.1, alpha=1)
             else:
-                ax.plot(tempo, self.dicionario_dados[classe].T, color=cores[classe], linewidth=0.075, alpha=1)
+                ax.plot(tempo, self.dicionario_dados[classe].T, color=cores[classe],\
+                 linewidth=0.075, alpha=1)
         
 
-        legendas = [plt.Line2D([0], [0], color=cor, label=classe, linewidth=0.002) for classe, cor in cores.items()]
+        legendas = [plt.Line2D([0], [0], color=cor, label=classe, linewidth=0.002)\
+             for classe, cor in cores.items()]
 
-        legenda = ax.legend(loc="upper right", fontsize=6, framealpha=0.5, handles=legendas, ncol=3)
+        legenda = ax.legend(loc="upper right", fontsize=6, framealpha=0.5, handles=legendas,\
+                 ncol=3)
         for linha in legenda.get_lines():
             linha.set_linewidth(1.5)
 

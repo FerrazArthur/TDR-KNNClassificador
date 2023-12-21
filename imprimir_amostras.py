@@ -1,8 +1,6 @@
-from modelos.previsao import executar_multiplas_previsoes_KNN_matriz_confusao, executar_multiplas_previsoes_correlacao_matriz_confusao
 from metricas.metricas import obter_distancia_minkowski_entre_classes, obter_linha_maior_distancia_minkowski_entre_dataframes, obter_vetor_distancias_a_media_dataframe, obter_distancia_minkowski_min_mean_max_em_classes
 from visualizacao.visualizacao import imprime_distribuicao_padronizada_distancias, imprime_distancias, imprime_matriz_distancias_classes, imprime_distribuicao_distancias
-from visualizacao.tabelas import imprime_tabela_latex_precisao
-from modelos.dados import Dados
+from dados.dados import Dados
 from pathlib import Path
 
 conjunto1_nome = Path('1_carga_raw')

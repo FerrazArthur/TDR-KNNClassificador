@@ -3,7 +3,7 @@ from typing import List
 import pickle
 
 def imprime_tabela_latex_precisao(dict1_caminho:str="", tamanhos_lista_1:List[int]=[2232, 3128]\
-                        , dict2_caminho:str="", tamanhos_lista_2:List[int]=[3192, 4494]):
+                        , dict2_caminho:str="", tamanhos_lista_2:List[int]=[3192, 4494])-> None:
     """ 
     Imprime a tabela de precisão em LaTeX.
     Assume que todos os classificadores foram usados: CS, CA, kNN com k=1, k=3 e k=5 e 
@@ -11,6 +11,8 @@ def imprime_tabela_latex_precisao(dict1_caminho:str="", tamanhos_lista_1:List[in
     Args:
         dict1_caminho (str): Caminho para o arquivo do dicionário do conjunto de dados 1.
         dict2_caminho (str): Caminho para o arquivo do dicionário do conjunto de dados 2.
+        tamanho_lista_1 (List[int]): Lista com os tamanhos de treino do conjunto de dados 1.
+        tamanho_lista_2 (List[int]): Lista com os tamanhos de treino do conjunto de dados 2.
     """
     # Carregar o dicionário de um arquivo
     dict1_caminho = Path(dict1_caminho)
@@ -65,8 +67,9 @@ def imprime_tabela_latex_precisao(dict1_caminho:str="", tamanhos_lista_1:List[in
 
     print(tabela_latex)
 
-def imprime_tabela_latex_mem_time_C(dict1_caminho:str="", num_classes_1 = 8, tamanhos_lista_1:List[int]=[2232, 3128]\
-                        , dict2_caminho:str="", num_classes_2 = 21, tamanhos_lista_2:List[int]=[3192, 4494]):
+def imprime_tabela_latex_mem_time_C(dict1_caminho:str="", num_classes_1 = 8,\
+    tamanhos_lista_1:List[int]=[2232, 3128], dict2_caminho:str="", num_classes_2 = 21, \
+    tamanhos_lista_2:List[int]=[3192, 4494])-> None:
     """ 
     Imprime uma tabela com o tempo e o pico de consumo de memória entre dois classificados baseados em
      correlação no formato LaTeX.

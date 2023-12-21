@@ -5,7 +5,6 @@ from itertools import combinations
 import pandas as pd
 from typing import Tuple, Dict
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 def obter_linha_maior_distancia_minkowski_entre_dataframes(dados:Dict[str, pd.DataFrame], p:int=2)-> Tuple[str, int, float]:

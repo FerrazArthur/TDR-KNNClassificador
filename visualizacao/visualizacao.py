@@ -1,12 +1,11 @@
 import tkinter as tk
 import matplotlib.pyplot as plt
-from modelos.dados import Dados
+from dados.dados import Dados
 from sklearn.metrics import ConfusionMatrixDisplay
 import pandas as pd
 import seaborn as sns
 import numpy as np
 from pathlib import Path
-from metricas.metricas import obter_distancia_minkowski_entre_classes
 from typing import Dict
 
 def imprime_distancias(distancias:pd.Series):
@@ -54,8 +53,8 @@ def formatar_valor(val):
 
 def imprime_distribuicao_distancias(distancias:pd.DataFrame, save_fig=False, caminho:str=""):
     """
-    Imprime a matriz com a média de todas as distâncias de cada amostra da classe à media(sinal medio)
-      da classe.
+    Imprime a matriz com a média de todas as distâncias de cada amostra da classe à media
+        (sinal medio) da classe.
     Args:
         distancias (pd.DataFrame): Matriz com as distâncias.
         caminho (str): Caminho para salvar a figura.
@@ -65,7 +64,8 @@ def imprime_distribuicao_distancias(distancias:pd.DataFrame, save_fig=False, cam
     largura_polegadas = 160 / 50.8
     altura_polegadas = 247 / 50.8
     fig, ax = plt.subplots(figsize=(largura_polegadas, altura_polegadas))
-    sns.heatmap(distancias, annot=True, fmt=".3g", cmap="Blues", cbar=False, ax=ax, annot_kws={"size": 7})
+    sns.heatmap(distancias, annot=True, fmt=".3g", cmap="Blues", cbar=False, ax=ax, \
+        annot_kws={"size": 7})
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=6)
     ax.set_xticklabels(ax.get_xticklabels(), rotation=0, fontsize=6)
     fig.tight_layout()
@@ -99,14 +99,14 @@ def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig
     sns.heatmap(pd.DataFrame(matriz_distancias).astype(float), annot=True, fmt=".2g", cmap="Blues", \
                 cbar=False, ax=ax, annot_kws={"size": 6})
     
-    ax.set_xticks(np.arange(0.5, len(legendas.keys()), 1))
-    ax.set_yticks(np.arange(0.5, len(legendas.keys()), 1))
-    ax.set_yticklabels(legendas.keys(), rotation=0, fontsize=5)
+    ax.set_xticks(np.arange(0.5, len(matriz_distancias.keys()), 1))
+    ax.set_yticks(np.arange(0.5, len(matriz_distancias.keys()), 1))
     if legendas is not None:
-        ax.set_xticklabels(ax.get_yticklabels(), rotation=0,\
-                            fontsize=5)
+        ax.set_yticklabels(legendas.keys(), rotation=0, fontsize=5)
+        ax.set_xticklabels(legendas.keys(), rotation=0, fontsize=5)
     else:
-        ax.set_xticklabels(ax.get_yticklabels(), rotation=-90, fontsize=5)
+        ax.set_yticklabels(matriz_distancias.keys(), rotation=0, fontsize=5)
+        ax.set_xticklabels(matriz_distancias.keys(), rotation=0, fontsize=5)
     
     # Iterar sobre os textos nas células e aplicar o formatter
     for text in ax.texts:
@@ -123,8 +123,9 @@ def imprime_matriz_distancias_classes(matriz_distancias:Dict[str, str], save_fig
     else:
         plt.show()
 
-def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confusao:Dict[str, Dict[str, float]], \
-                                    relatorio_classificacao:Dict[str, Dict[str, float]], titulo="", save_fig=False):
+def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, \
+     matriz_confusao:Dict[str, Dict[str, float]],relatorio_classificacao:Dict[str, Dict[str, float]], \
+     titulo="", save_fig=False):
     """
     Imprime a matriz de confusão e o relatório de classificação em um gráfico único.
     Args:
@@ -137,8 +138,9 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
     # Tamanho da imagem em polegadas
     largura_polegadas = 455/72
     fig, ax = plt.subplots(figsize=(largura_polegadas, largura_polegadas))
-    sns.heatmap(pd.DataFrame(matriz_confusao, columns=dados.classes_lista, index=dados.classes_lista).astype(float), annot=True, fmt=".3g", cmap="Blues", \
-                cbar=False, ax=ax, annot_kws={"size": 6})
+    sns.heatmap(pd.DataFrame(matriz_confusao, columns=dados.classes_lista, \
+     index=dados.classes_lista).astype(float), annot=True, fmt=".3g", cmap="Blues", \
+     cbar=False, ax=ax, annot_kws={"size": 6})
     ax.set_xticks(np.arange(0.5, dados.num_classes, 1))
     ax.set_yticks(np.arange(0.5, dados.num_classes, 1))
     ax.set_yticklabels(dados.classes_lista, rotation=0, fontsize=5)
@@ -163,10 +165,11 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
         plt.savefig(caminho / file_name, format="pdf", dpi=300)
         plt.close()
     else:
-        plt.show()
+        # plt.show()
+        plt.close()
 
-    # Remove a linha 'accuracy' do relatório de classificação
-    relatorio_classificacao.pop('accuracy')
+    # Remove a linha 'macro avg' do relatório de classificação
+    relatorio_classificacao.pop('macro avg')
     # Remove a coluna f1-score
     for chave, _ in relatorio_classificacao.items():
         try:
@@ -175,20 +178,20 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
             pass
 
     # Traduz avg
-    macro_avg = relatorio_classificacao.pop('macro avg')
+    accuracy = relatorio_classificacao.pop('accuracy')
     weighted_avg = relatorio_classificacao.pop('weighted avg')
-    relatorio_classificacao['Média macro'] = macro_avg
     relatorio_classificacao['Média ponderada'] = weighted_avg
+    relatorio_classificacao['Acurácia'] = accuracy
 
     # Tamanho da imagem em polegadas
     largura_polegadas = 160 / 50.8
     altura_polegadas = 247 / 50.8
 
     fig, ax = plt.subplots(figsize=(largura_polegadas, altura_polegadas))
-    sns.heatmap(pd.DataFrame(relatorio_classificacao).iloc[:, :].T, annot=True, fmt=".5g", cmap="Blues",\
-                 cbar=False, ax=ax, annot_kws={"size": 7})
+    sns.heatmap(pd.DataFrame(relatorio_classificacao).iloc[:, :].T, annot=True, fmt=".5g",\
+     cmap="Blues", cbar=False, ax=ax, annot_kws={"size": 7})
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=6)
-    ax.set_xticklabels(["precisão", "Revocação", "Suporte"], rotation=0, fontsize=6)
+    ax.set_xticklabels(["Precisão", "Revocação", "Suporte"], rotation=0, fontsize=6)
 
     # Iterar sobre os textos nas células e aplicar o formatter
     for text in ax.texts:
@@ -201,7 +204,8 @@ def imprime_matriz_confusao_e_relatorio_classificacao(dados:Dados, matriz_confus
         plt.savefig(caminho / file_name, format="pdf", dpi=300)
         plt.close()
     else:
-        plt.show()
+        # plt.show()
+        plt.close()
 
 def mostra_matriz(matriz, label_x=[], label_y=[]):
     """
